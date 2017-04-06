@@ -9,7 +9,7 @@ import org.hibernate.annotations.DynamicUpdate;
 /**
  * The persistent class for the parameter database table.
  * 
- */
+ */ 
 @Entity
 @Table(name = "parameter")
 @DynamicInsert

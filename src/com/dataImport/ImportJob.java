@@ -8,6 +8,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +70,7 @@ public class ImportJob {
 		int count = 0;
 		String[] keys = null;
 		long id = Long.valueOf(f.getName().split("\\.")[0]);
+		List<CDataBasePo> saveList=new ArrayList<>();
 		for (String line = di.readLine(); line != null; line = di.readLine()) {
 			String[] cells = line.split("\t");
 			if (cells.length < 6) {
@@ -82,11 +85,15 @@ public class ImportJob {
 
 			} else {
 				CDataBasePo po = toPo(id, keys, cells);
-				dataBaseDao.save(po);
+				saveList.add(po);
+			
 			}
 			count++;
 		}
+		dataBaseDao.save(saveList);
+		System.err.println("ok:"+id);
 	}
+
 
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
