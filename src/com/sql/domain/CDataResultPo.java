@@ -15,13 +15,12 @@ public class CDataResultPo implements Serializable {
 
 	@EmbeddedId
 	private CDataResultPoPK id;
-
+	
 	private double avg;
-
 	private String other;
-
 	private double result;
-
+	
+	private double score;
 	private int size;
 
 	public CDataResultPo() {
@@ -65,6 +64,14 @@ public class CDataResultPo implements Serializable {
 
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	public double getScore() {
+		return score;
+	}
+
+	public void setScore(double score) {
+		this.score = score;
 	}
 
 }

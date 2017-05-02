@@ -88,6 +88,12 @@ public class ImportJob {
 				saveList.add(po);
 			
 			}
+			if(saveList.size()>1000)
+			{
+				dataBaseDao.save(saveList);
+				saveList.clear();
+				System.err.println("s:"+count);
+			}
 			count++;
 		}
 		dataBaseDao.save(saveList);
@@ -141,7 +147,7 @@ public class ImportJob {
 			}
 			cell = cell.replaceAll("\\.", "");
 			result[i] = cell;
-			System.err.println(cell);
+//			System.err.println(cell);
 		}
 		return result;
 	}

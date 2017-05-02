@@ -7,7 +7,8 @@ public class LycjssFlagData extends DataBase {
 	private double macdDif;
 	private double macdDea;
 	private double macdMacd;
-
+	private double lycjdmiFlags;
+	private double lycjdmiFlagsums;
 	public double getLycjssFlags() {
 		return lycjssFlags;
 	}
@@ -55,4 +56,21 @@ public class LycjssFlagData extends DataBase {
 	public void setMacdMacd(double macdMacd) {
 		this.macdMacd = macdMacd;
 	}
+
+	public double getLycjdmiFlags() {
+		return lycjdmiFlags;
+	}
+
+	public void setLycjdmiFlags(double lycjdmiFlags) {
+		this.lycjdmiFlags = lycjdmiFlags;
+	}
+
+	public double getLycjdmiFlagsums() {
+		return lycjdmiFlagsums;
+	}
+
+	public void setLycjdmiFlagsums(double lycjdmiFlagsums) {
+		this.lycjdmiFlagsums = lycjdmiFlagsums;
+	}
+
 }
