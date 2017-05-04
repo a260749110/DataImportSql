@@ -55,7 +55,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 		po.setOther(JSON.toJSONString(other));
 		po.setScore(score);
 		dao.save(po);
-		
+
 		System.out.println("id :" + id + "  result:" + result + "  avg:" + po.getAvg() + "  use:"
 				+ ((triCount == 0) ? 0 : useDay / triCount) + "   resultAll:" + resultAll);
 	}
@@ -64,7 +64,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 		int count = 0;
 		List<History> histories = new ArrayList<>();
 		List<History> removeList = new ArrayList<>();
-		for (int i = 1; i < datas.size(); i++) {
+		for (int i = 2; i < datas.size(); i++) {
 			LycjssFlagData data = datas.get(i);
 			// if (data.getLycjssFlags() > 0) {
 			// if (data.getLycjdmiFlags() > 0) {
@@ -75,6 +75,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 				continue;
 			}
 			LycjssFlagData bf = datas.get(i - 1);
+			LycjssFlagData bbf = datas.get(i - 2);
 			double change = data.getClose() / bf.getClose();
 			if (change > 1.15 || change < 0.85) {
 				System.err.println("erro:" + LycjssFlagJob.dateFormat.format(data.getDate()) + "  " + id);
@@ -84,7 +85,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 
 			// if (datas.get(i - 1).getLycjdmiFlagsums() > 0 &&
 			// DapanData.getInstance().canTri(datas.get(i - 1))) {
-			if (bf.getLycjdmiFlagsums() > 0 && data.getMacdMacd() > bf.getMacdMacd()
+			if (bf.getLycjdmiFlagsums() > 0 && bf.getMacdMacd() > bbf.getMacdMacd()
 					&& DapanData.getInstance().canTri(data)) {
 				History history = new History();
 				history.size = i;
@@ -107,12 +108,13 @@ public class LycjssFlagJob extends CheckJobsBase {
 					if (difS < difH) {
 						if (difH > win) {
 							double av = (difH + difS) / 2d;
-							if(av>win)
-							dif = av;
+							if (av > win)
+								dif = av;
 							else
 								dif = win;
 							okFlag = true;
-//							System.err.println(data.getDate()+"difH"+"  "+difS);
+							// System.err.println(data.getDate()+"difH"+"
+							// "+difS);
 						}
 					}
 					if (!okFlag) {
@@ -139,7 +141,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 							history.setDif(dif);
 							history.setNowWin(result);
 							history.end = dateFormat.format(data.getDate());
-							history.endMoney = history.getStartMoney()*(1+dif);
+							history.endMoney = history.getStartMoney() * (1 + dif);
 							removeList.add(history);
 							other.historys.add(history);
 							allHistory.addHistory(history);
@@ -182,12 +184,17 @@ public class LycjssFlagJob extends CheckJobsBase {
 
 	private static Random random = new Random();
 
-	public static  boolean canBuy(double score) {
+	public static boolean canBuy(LycjssFlagData now, LycjssFlagData bf) {
+		return now.getLycjdmiFlagsums() > 0 && now.getMacdMacd() > bf.getMacdMacd()
+				&& DapanData.getInstance().canTri(now);
+	}
+
+	public static boolean canBuy(double score) {
 		if (score < 1) {
 			double rand = random.nextDouble();
 			rand = Math.pow(rand, 1);
 			if (rand > score) {
-				System.out.println("can not buy:" + score + "    " + rand);
+				// System.out.println("can not buy:" + score + " " + rand);
 				return false;
 			}
 		}

@@ -3,17 +3,11 @@ package com.check.cells;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-
-import org.apache.commons.httpclient.util.DateUtil;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 
 import com.check.job.LycjssFlagJob;
 import com.check.job.LycjssFlagJob.History;
@@ -24,7 +18,9 @@ import com.util.AppContextUtil;
 public class AllHistory {
 	List<History> historyList = new ArrayList<>();
 	public Map<String, CHistoryInOutPo> historyMaps = new HashMap<String, CHistoryInOutPo>();
-	public double initMoney = 20;
+	public static double INIT_MONEY=20;
+	public  double initMoney = INIT_MONEY;
+	public  double moneyALL = INIT_MONEY;
 	public List<NewHistory> historybuyList = new ArrayList<>();
 	Map<String, Double> historyWinloseMap = new HashMap<>();
 
@@ -158,17 +154,20 @@ public class AllHistory {
 				// System.err.println(now +" "+end);
 				if (now.compareTo(end) >= 0) {
 					initMoney += (historyBuy.history.getDif() + 1d) * historyBuy.buy;
+					moneyALL+=(historyBuy.history.getDif() + 1d) * historyBuy.buy-historyBuy.buy;
 					removeList.add(historyBuy);
 					System.err.println("S  "+historyBuy.history.getId()+":" + initMoney + "   rate:" + rate + "  " +historyBuy.history.getDif());
 				}
 			}
-			if (initMoney + historybuyList.size() > 25) {
-				rate = 1 + (initMoney + historybuyList.size()) / 200;
-			}
+			rate=getRate(rate,moneyALL);
+//			if (initMoney + historybuyList.size() > 25) {
+//				rate = 1 + (initMoney + historybuyList.size()) / 80;
+//			}
 			historybuyList.removeAll(removeList);
 		}
 		for (NewHistory historyBuy : historybuyList) {
 			initMoney += (historyBuy.history.getDif() + 1d) * historyBuy.buy;
+			moneyALL+=(historyBuy.history.getDif() + 1d) * historyBuy.buy-historyBuy.buy;
 		}
 		System.err.println("end:" + initMoney);
 		List<WLD> wldL = new ArrayList<>();
@@ -201,12 +200,19 @@ public class AllHistory {
 		}
 		allDif /= buyList.size();
 		allDif /= 3600l * 1000l * 24l;
-		System.err.println("平均时间：" + allDif+",总共："+buyList.size()+"个交易");	}
+		System.err.println("平均时间：" + allDif+",总共："+buyList.size()+"个交易"+ "   "+moneyALL);	}
 	public static class WLD {
 		String date;
 		double result = 0;
 	}
 
+	public static double getRate(double rate,double now)
+	{
+		if (now > INIT_MONEY*1.25) {
+			rate = 1 + (now) / 90;
+		}
+		return rate;
+	}
 	public  List<History> sortList(List<History> list,int size)
 	{
 		
@@ -220,7 +226,7 @@ public class AllHistory {
 			index=(list.size()-size)/2;
 		}
 	for (int i = 0; i<size&&i<list.size(); i++) {
-			result.add(list.get(list.size()-1-i));
+			result.add(list.get(i));
 		}
 		return result;
 	}
