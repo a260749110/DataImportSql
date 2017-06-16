@@ -12,7 +12,7 @@ import com.sql.domain.CDataBasePoPK;
 public interface CDataBaseDao extends PagingAndSortingRepository<CDataBasePo, CDataBasePoPK> {
 	@Query(value ="SELECT * FROM c_data_base ", nativeQuery = true)
 	List<CDataBasePo> findAll();
-	@Query(value = "select * from c_data_base where `id`=:id and `date`>'2010-01-01 00:00:00'   order by `date` asc", nativeQuery = true)
+	@Query(value = "select * from c_data_base where `id`=:id and `date`>'2010-01-01 00:00:00' and `date`<'2027-05-24 00:00:00' and `id` <3000000 order by `date` asc", nativeQuery = true)
 	List<CDataBasePo> findById(@Param("id")long id);
 	@Query(value = "select * from c_data_base where `date`=:date_ ", nativeQuery = true)
 	List<CDataBasePo> findByDate(@Param("date_")String date_);
@@ -20,6 +20,8 @@ public interface CDataBaseDao extends PagingAndSortingRepository<CDataBasePo, CD
 	@Query(value = "select * from c_data_base where `id`=:id and `date`<:date_   order by `date` desc limit 1", nativeQuery = true)
 	CDataBasePo  findBfByIdAndDate(@Param("id")long id,@Param("date_")String date_);
 	
+	@Query(value = "select * from c_data_base where `id`=:id and `date`>=:date_   order by `date` asc ", nativeQuery = true)
+	List<CDataBasePo>  findAfByIdAndDate(@Param("id")long id,@Param("date_")String date_);
 	@Query(value ="SELECT `id` FROM c_data_base GROUP BY `id` ", nativeQuery = true)
 	List<Long> getAllId();
 }

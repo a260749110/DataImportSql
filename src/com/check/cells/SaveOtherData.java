@@ -1,103 +1,33 @@
 package com.check.cells;
 
-import java.util.Date;
-
 import com.alibaba.fastjson.JSON;
 import com.sql.domain.CDataBasePo;
 
-public class LycjssFlagData extends DataBase {
-	private double lycjssFlags = 0;
-	private double lycjssVma = 0;
-	private double lycjssVpr = 0;
-	private double macdDif = 0;
-	private double macdDea = 0;
-	private double macdMacd = 0;
-	private double lycjdmiFlags = 0;
-	private double lycjdmiFlagsums = 0;
-	private double lycjdmiHightsum = 0;
-	private double lycjdmiFlagsumsshow = 0;
-	private double lycjdmiVdif = 0;
-	private double lycjdmiVma = 0;
-	private double lycjdmiVpr = 0;
-	private double lykdjBuyflag = 0;
-	private double lydmiBuyflag = 0;
-	private double lydmiSellflag = 0;
-	private double lydmiPdi = 0;
-	private double lydmiAdx = 0;
-	private double lydmiAdxr = 0;
-	private double lydmiMdi = 0;
-	private double lysarfVsum = 0;
-	private double lysarfVsumdif = 0;
-	private double lysarf = 0;
-	private double lysarfVdif = 0;
+public class SaveOtherData {
 
-	
+	private double lycjssFlags;
+	private double lycjssVma;
+	private double lycjssVpr;
+	private double macdDif;
+	private double macdDea;
+	private double macdMacd;
+	private double lycjdmiFlags;
+	private double lycjdmiFlagsums;
+	private double lycjdmiHightsum;
+	private double lycjdmiFlagsumsshow;
+	private double lycjdmiVdif;
+	private double lycjdmiVma;
+	private double lycjdmiVpr;
+	private double lykdjBuyflag;
+	private double lydmiBuyflag;
+	private double lydmiSellflag;
+	private double lydmiPdi;
+	private double lydmiAdx;
+	private double lydmiAdxr;
+	private double lydmiMdi;
+
 	public double getLydmiPdi() {
 		return lydmiPdi;
-	}
-
-	private Date date;
-	private long id;
-	private double start = 0;
-	private double high = 0;
-	private double low = 0;
-	private double close = 0;
-	private double deal = 0;
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public double getStart() {
-		return start;
-	}
-
-	public void setStart(double start) {
-		this.start = start;
-	}
-
-	public double getHigh() {
-		return high;
-	}
-
-	public void setHigh(double high) {
-		this.high = high;
-	}
-
-	public double getLow() {
-		return low;
-	}
-
-	public void setLow(double low) {
-		this.low = low;
-	}
-
-	public double getClose() {
-		return close;
-	}
-
-	public void setClose(double close) {
-		this.close = close;
-	}
-
-	public double getDeal() {
-		return deal;
-	}
-
-	public void setDeal(double deal) {
-		this.deal = deal;
 	}
 
 	public void setLydmiPdi(double lydmiPdi) {
@@ -118,38 +48,6 @@ public class LycjssFlagData extends DataBase {
 
 	public void setLydmiAdxr(double lydmiAdxr) {
 		this.lydmiAdxr = lydmiAdxr;
-	}
-
-	public double getLysarfVsum() {
-		return lysarfVsum;
-	}
-
-	public void setLysarfVsum(double lysarfVsum) {
-		this.lysarfVsum = lysarfVsum;
-	}
-
-	public double getLysarfVsumdif() {
-		return lysarfVsumdif;
-	}
-
-	public void setLysarfVsumdif(double lysarfVsumdif) {
-		this.lysarfVsumdif = lysarfVsumdif;
-	}
-
-	public double getLysarf() {
-		return lysarf;
-	}
-
-	public void setLysarf(double lysarf) {
-		this.lysarf = lysarf;
-	}
-
-	public double getLysarfVdif() {
-		return lysarfVdif;
-	}
-
-	public void setLysarfVdif(double lysarfVdif) {
-		this.lysarfVdif = lysarfVdif;
 	}
 
 	public double getLycjssFlags() {

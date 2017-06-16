@@ -5,11 +5,11 @@ import java.util.Date;
 public class DataBase {
 	private Date date;
 	private long id;
-	private double start;
-	private double high;
-	private double low;
-	private double close;
-	private double deal;
+	private double start=0;
+	private double high=0;
+	private double low=0;
+	private double close=0;
+	private double deal=0;
 	public Date getDate() {
 		return date;
 	}

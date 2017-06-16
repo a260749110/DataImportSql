@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.check.CheckMain;
 import com.check.EcheckType;
+import com.check.cells.AllHistory;
 import com.check.cells.LycjssFlagData;
 import com.check.job.LycjssFlagJob;
+import com.check.job.LycjssFlagJob.History;
 import com.sql.dao.CDataBaseDao;
 import com.sql.dao.CDataBaseResultDao;
 import com.sql.domain.CDataBasePo;
 import com.sql.domain.CDataResultPo;
 import com.sql.domain.CDataResultPoPK;
 import com.util.AppContextUtil;
+import com.util.DateHelper;
 
 public class Buy {
 
@@ -22,6 +24,7 @@ public class Buy {
 	public double baseBuy;
 	public double nowMoney;
 	public List<LycjssFlagData> datas;
+	public double size = 20;
 
 	public Buy(String date, double allMoney, double baseBuy, double nowMoney) {
 		super();
@@ -29,13 +32,14 @@ public class Buy {
 		this.allMoney = allMoney;
 		this.baseBuy = baseBuy;
 		this.nowMoney = nowMoney;
+
 		init();
 	}
 
 	public static void main(String[] args) {
 		// CheckMain.refresh();
 
-		Buy buy = new Buy("2017/05/3", 200713, 10000, 22419);
+		Buy buy = new Buy("2017/06/15", 200713, 10000, 22419);
 		buy.run();
 	}
 
@@ -53,14 +57,24 @@ public class Buy {
 	}
 
 	public List<TriData> triDatas = new ArrayList<>();
-
+	public List<History> trihDatas = new ArrayList<>();
 	public void run() {
 		CDataBaseResultDao dao = AppContextUtil.getContext().getBean(CDataBaseResultDao.class);
 		CDataBaseDao dataDao = AppContextUtil.getContext().getBean(CDataBaseDao.class);
 		for (LycjssFlagData data : datas) {
 			// System.err.println("id:"+data.getId());
-			LycjssFlagData bfData=getBF(dataDao, data.getId(), date);
-			if (data.getLycjdmiFlagsums() > 0) {
+			LycjssFlagData bfData = null;
+	
+			if (data.getId() > 300000)
+				continue;
+			try {
+				bfData = getBF(dataDao, data.getId(), date);
+		
+			} catch (Exception e) {
+				System.err.println("can no read: " + data.getId());
+				continue;
+			}
+			if (LycjssFlagJob.canBuy(data, bfData)) {
 				CDataResultPoPK pk = new CDataResultPoPK();
 				pk.setId(data.getId());
 				pk.setType(EcheckType.LYCJSS_FLAG.toString());
@@ -72,23 +86,37 @@ public class Buy {
 				TriData tdata = new TriData();
 				tdata.id = data.getId();
 				tdata.score = po.getScore();
+				
+				
+				History h=new History();
+				h.setId(data.getId());
+				h.setScore(po.getScore());
+				h.bf=data;
+				h.bbf=bfData;
 				if (LycjssFlagJob.canBuy(tdata.score)) {
 					triDatas.add(tdata);
+					trihDatas.add(h);
 				}
 
 			}
 		}
 		triDatas.sort((a, b) -> {
-			return a.score > b.score ? -1 : a.score == b.score ? 0 : 1;
+			return a.score > b.score ? 1 : a.score == b.score ? 0 : -1;
 		});
-		for (TriData d : triDatas) {
-			System.err.println(d.id);
+		
+		List<History> buyList=AllHistory.sortList(trihDatas, 9999);
+		for (History h : buyList) {
+			System.err.println(h.getId());
 		}
+//		for (TriData d : triDatas) {
+//			System.err.println(d.id);
+//		}
 
 	}
 
 	private LycjssFlagData getBF(CDataBaseDao dataDao, long id, String date) {
 		CDataBasePo po = dataDao.findBfByIdAndDate(id, date);
+
 		LycjssFlagData result = JSON.parseObject(po.getDataBase(), LycjssFlagData.class);
 		result.setDate(po.getId().getDate());
 		result.setId(po.getId().getId());

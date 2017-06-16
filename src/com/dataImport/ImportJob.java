@@ -83,7 +83,7 @@ public class ImportJob {
 					e.printStackTrace();
 				}
 
-			} else {
+			} else if(count>60) {
 				CDataBasePo po = toPo(id, keys, cells);
 				saveList.add(po);
 			
