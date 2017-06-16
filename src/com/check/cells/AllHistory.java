@@ -375,7 +375,7 @@ public class AllHistory {
 		result.rate = rate;
 		result.sunccessCount = success;
 		result.unSuccessCount = unsuccess;
-		result.difPer = moneyALL / startM;
+		result.difPer = (moneyALL - startM) / startM * 100;
 		result.allDif = allDif;
 		result.groupAll = groupAll;
 		System.err.println(result.toString());
@@ -425,18 +425,16 @@ public class AllHistory {
 		List<History> temp = new ArrayList<>();
 		temp.addAll(list);
 		for (History h : list) {
-			
-			if (h.bf.getMacdMacd() <= h.bbf.getMacdMacd())
-				{
+
+			if (h.bf.getMacdMacd() <= h.bbf.getMacdMacd()) {
 				System.err.println("asdasdas!!!!!!!!!!!!!");
-				}
-			
-//			if (h.bf.getLycjdmiHightsum() >= h.bf.getLycjdmiVdif()) {
-//				temp.remove(h);
-//			}
-//			else 
-				if (h.bbf.getLycjdmiHightsum() <= h.bbf.getLycjdmiVdif())
-			{
+			}
+
+			// if (h.bf.getLycjdmiHightsum() >= h.bf.getLycjdmiVdif()) {
+			// temp.remove(h);
+			// }
+			// else
+			if (h.bbf.getLycjdmiHightsum() <= h.bbf.getLycjdmiVdif()) {
 				temp.remove(h);
 			}
 		}
@@ -447,52 +445,48 @@ public class AllHistory {
 
 		//
 		int tempi = 0;
-		for (int i = 0; result.size() < size&&i < temp.size(); i++) {
-			History t=temp.get(i);
-			if(t.bf.getLycjssFlags()>t.bbf.getLycjssFlags())
-			{
-				
+		for (int i = 0; result.size() < size && i < temp.size(); i++) {
+			History t = temp.get(i);
+			if (t.bf.getLycjssFlags() > t.bbf.getLycjssFlags()) {
+
 				result.add(t);
 			}
 		}
 		temp.removeAll(result);
-		
-		
-		
+
 		for (; result.size() < size && temp.size() > 0;) {
-			if ((tempi % 5) <30) {
-			
+			if ((tempi % 5) < 30) {
+
 				result.add(MathHelper.removeMost(temp, new IGetValue<History>() {
 
 					@Override
 					public double getValue(History t) {
-						return -(t.bf.getMacdMacd()-t.bbf.getMacdMacd());
+						return -(t.bf.getMacdMacd() - t.bbf.getMacdMacd());
 					}
 				}));
-			}
-			else if ((tempi % 5) < 40)
+			} else if ((tempi % 5) < 40)
 
 			{
 				result.add(MathHelper.removeMost(temp, new IGetValue<History>() {
 
 					@Override
 					public double getValue(History t) {
-						return t.bf.getLycjdmiVdif()-t.bbf.getLycjdmiVdif();
+						return t.bf.getLycjdmiVdif() - t.bbf.getLycjdmiVdif();
 					}
 				}));
 			}
 			// 4.553596856682389
-//			else if ((tempi % 2) < 4)
-//
-//			{
-//				result.add(MathHelper.removeMost(temp, new IGetValue<History>() {
-//
-//					@Override
-//					public double getValue(History t) {
-//						return -(t.bf.getMacdMacd()-t.bbf.getMacdMacd());
-//					}
-//				}));
-//			}
+			// else if ((tempi % 2) < 4)
+			//
+			// {
+			// result.add(MathHelper.removeMost(temp, new IGetValue<History>() {
+			//
+			// @Override
+			// public double getValue(History t) {
+			// return -(t.bf.getMacdMacd()-t.bbf.getMacdMacd());
+			// }
+			// }));
+			// }
 
 			else {
 
@@ -566,7 +560,7 @@ public class AllHistory {
 			StringBuffer stringBuffer = new StringBuffer();
 			stringBuffer.append("moneyDef:" + moneyDef).append("  ");
 			stringBuffer.append("monetResylt:" + monetResylt).append("  ");
-			stringBuffer.append("difPer:" + difPer).append("  ");
+			stringBuffer.append("difPer:" + MathHelper.doubleFormat00_00.format(difPer)).append("%  ");
 			stringBuffer.append("Æ½¾ùºÄÊ±:" + allDif).append("  ");
 			stringBuffer.append("successPer:" + ((double) (sunccessCount) / (sunccessCount + unSuccessCount)))
 					.append("   ");

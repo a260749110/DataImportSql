@@ -1,8 +1,12 @@
 package com.util;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class MathHelper {
+
+	public static	DecimalFormat doubleFormat00_00 = new DecimalFormat("######0.00");
+
 	public static <T> double Variance(List<T> list, int index, int size, IGetValue<T> valueFun) {
 		double avg = 0;
 		double sum = 0;
