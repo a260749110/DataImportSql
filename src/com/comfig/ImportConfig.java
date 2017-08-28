@@ -14,19 +14,19 @@ public class ImportConfig {
 	private String save_src;
 	
 	@Value("${pre_random}")
-	private float pre_random;
+	private Float pre_random;
 	@Value("${def_parameter}")
-	private float def_parameter;
+	private Float def_parameter;
 	@Value("${max_random}")
-	private float max_random;
+	private Float max_random;
 	@Value("${min_random}")
-	private float min_random;
+	private Float min_random;
 	@Value("${step_random}")
-	private float step_random;
+	private Float step_random;
 	@Value("${max_size}")
-	private float max_size;
+	private Float max_size;
 	@Value("${save_size}")
-	private int save_size;
+	private Integer save_size;
 
 	public String getDir() {
 		return dir;

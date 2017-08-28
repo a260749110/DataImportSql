@@ -320,7 +320,7 @@ public class Caluculate {
 	}
 
 	private static Random random = new Random();
-	float tempScore = 0;
+	public float tempScore = 0;
 
 	public boolean canBuy(LycjssFlagData now, LycjssFlagData bf) {
 		tempScore = 0;
