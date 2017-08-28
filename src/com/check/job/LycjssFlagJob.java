@@ -78,7 +78,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 		int count = 0;
 		List<History> histories = new ArrayList<>();
 		List<History> removeList = new ArrayList<>();
-		for (int i = Config.return_size+1; i < datas.size(); i++) {
+		for (int i = Config.return_size + 1; i < datas.size(); i++) {
 			LycjssFlagData data = datas.get(i);
 			// if (data.getLycjssFlags() > 0) {
 			// if (data.getLycjdmiFlags() > 0) {
@@ -101,7 +101,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 			// if (datas.get(i - 1).getLycjdmiFlagsums() > 0 &&
 			// DapanData.getInstance().canTri(datas.get(i - 1))) {
 			if (canBuy(bf, bbf)) {
-				History history =   new History();
+				History history = new History();
 				history.size = i;
 				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
 				history.start = dateFormat.format(data.getDate());
@@ -113,15 +113,16 @@ public class LycjssFlagJob extends CheckJobsBase {
 				history.bf = bf;
 				history.bbf = bbf;
 				history.index = i;
-				history.variance = MathHelper.Variance(datas, i - 1, Config.return_size, new IGetValue<LycjssFlagData>() {
+				history.variance = MathHelper.Variance(datas, i - 1, Config.return_size,
+						new IGetValue<LycjssFlagData>() {
 
-					@Override
-					public double getValue(LycjssFlagData t) {
-						// TODO Auto-generated method stub
-						return t.getLycjdmiVdif();
-					}
+							@Override
+							public double getValue(LycjssFlagData t) {
+								// TODO Auto-generated method stub
+								return t.getLycjdmiVdif();
+							}
 
-				});
+						});
 				allDatas.add(bf);
 				history.avgLycjdmiFlagsumsshow = allDatas.getCurrAvgLycjdmiFlagsumsshow();
 				// System.err.println("buy:" +
@@ -287,6 +288,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 								useDay += i - history.getSize();
 								history.setSize(i - history.getSize());
 								history.setId(id);
+								history.takeFlag = true;
 								triCount++;
 								history.setDif(dif);
 								history.setNowWin(result);
@@ -382,12 +384,12 @@ public class LycjssFlagJob extends CheckJobsBase {
 		if (now.getLycjdmiFlagsums() <= 0)
 			return false;
 
-		if (now.getMacdMacd() <= bf.getMacdMacd())
+		if (Math.round(now.getMacdMacd() / 10) <= Math.round(bf.getMacdMacd() / 10))
 			return false;
 		if (!DapanData.getInstance().canTri(now))
 			return false;
-//		if (bf.getLycjdmiHightsum() <= bf.getLycjdmiVdif())
-//			return false;
+		// if (bf.getLycjdmiHightsum() <= bf.getLycjdmiVdif())
+		// return false;
 		// if((now.getLydmiAdxr()+now.getLydmiMdi())>now.getLydmiAdx()*3)
 		// return false;
 		// if (now.getClose()>= bf.getClose()*1.097)
@@ -429,8 +431,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 	}
 
 	public double buyMoney(LycjssFlagData now, LycjssFlagData bf, double buyPoint) {
-		
-		
+
 		return now.getStart() * buyPoint;
 	}
 
@@ -455,6 +456,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 		private double nowWin;
 		private double score = 1;
 		public int index = 0;
+		public boolean takeFlag = false;
 		public LycjssFlagData now;
 		public LycjssFlagData bf;
 		public LycjssFlagData bbf;

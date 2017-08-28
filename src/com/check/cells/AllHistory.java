@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.check.job.LycjssFlagJob.History;
+import com.comfig.Config;
 import com.sql.dao.CHistoryInOutDao;
 import com.sql.domain.CHistoryBuySellPK;
 import com.sql.domain.CHistoryBuySellPo;
@@ -350,10 +351,23 @@ public class AllHistory {
 		// }
 		DecimalFormat df = new DecimalFormat("######0.00");
 		long allDif = 0;
+		int take = 0;
+
+		buyList.sort((a, b) -> {
+			try {
+				return DateHelper.dateFormat.parse(a.getEnd()).compareTo(DateHelper.dateFormat.parse(b.getEnd()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				return 0;
+			}
+		});
 		for (History h : buyList) {
+
 			long dDif = (DateHelper.dateFormat.parse(h.getEnd()).getTime()
 					- DateHelper.dateFormat.parse(h.getStart()).getTime()) / (3600l * 1000l * 24l);
 			allDif += dDif;
+			if (h.takeFlag == true)
+				take++;
 			printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" + df.format(h.getStartMoney()) + " ,卖出时间:"
 					+ h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" + df.format(h.getDif() * 100) + "%"
 					+ " 耗时：" + dDif + "天      score:" + h.getScore());
@@ -366,6 +380,7 @@ public class AllHistory {
 					.append("\r\n");
 
 		}
+		System.err.println("目前持有:" + take);
 		yearInfo.append("success:" + success + "  Unsuccess:" + unsuccess + "  successRate:"
 				+ (success) / (success + unsuccess)).append("\r\n");
 		// System.err.println(yearInfo);
@@ -461,17 +476,17 @@ public class AllHistory {
 
 					@Override
 					public double getValue(History t) {
-						return -(t.bf.getMacdMacd() - t.bbf.getMacdMacd());
+						return -(Math.round(t.bf.getMacdMacd() / 10) - Math.round(t.bbf.getMacdMacd() / 10));
 					}
 				}));
-			} else if ((tempi % 5) < 40)
+			} else if ((tempi % 5) < 0)
 
 			{
 				result.add(MathHelper.removeMost(temp, new IGetValue<History>() {
 
 					@Override
 					public double getValue(History t) {
-						return t.bf.getLycjdmiVdif() - t.bbf.getLycjdmiVdif();
+						return (t.bf.getMacdDif());
 					}
 				}));
 			}

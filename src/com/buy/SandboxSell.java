@@ -83,15 +83,15 @@ public class SandboxSell {
 				if ((po.getBuyMoney() * (1 + Config.win_per) < data.getClose() * 1.101)
 						&& (po.getBuyMoney() * (1 + Config.win_per) > data.getClose() * 1.09)
 						&& (i == datas.size() - 1)) {
-					sb.append("id:" + po.getId() + " 在" + DateHelper.dateFormat.format(data.getDate()) + "冲击涨停不需要挂牌卖出"
-							+ "，冲击价格：" + po.getBuyMoney() * (1 + Config.win_per)).append("\r\n");
+//					sb.append("id:" + po.getId() + " 在" + DateHelper.dateFormat.format(data.getDate()) + "冲击涨停不需要挂牌卖出"
+//							+ "，冲击价格：" + po.getBuyMoney() * (1 + Config.win_per)).append("\r\n");
 				} else if ((po.getBuyMoney() * (1 + Config.win_per) <= data.getClose() * 1.101)) {
 					System.err.println("id:" + po.getId() + " 下个交易日挂："
 							+ df.format(po.getBuyMoney() * (1 + Config.win_per)) + "卖出-----------");
 				}
 				if (po.getBuyMoney() * (1 + Config.lose_per) >= data.getClose() * 0.9) {
-					System.out.println("id:" + po.getId() + " 下个交易日小于："
-							+ df.format(po.getBuyMoney() * (1 + Config.lose_per)) + "卖出");
+//					System.out.println("id:" + po.getId() + " 下个交易日小于："
+//							+ df.format(po.getBuyMoney() * (1 + Config.lose_per)) + "卖出");
 				}
 			}
 		}

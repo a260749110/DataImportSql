@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.comfig.Config;
 import com.sql.dao.CDataBaseDao;
 import com.sql.domain.CDataBasePo;
 import com.sql.domain.CDataBasePoPK;
@@ -28,7 +29,7 @@ public class ImportJob {
 	public ImportJob(EImportType type, String dir) {
 		this.type = type;
 		this.dir = dir;
-		dataBaseDao=AppContextUtil.getContext().getBean(CDataBaseDao.class);
+		dataBaseDao = AppContextUtil.getContext().getBean(CDataBaseDao.class);
 	}
 
 	public void runJob() {
@@ -70,7 +71,7 @@ public class ImportJob {
 		int count = 0;
 		String[] keys = null;
 		long id = Long.valueOf(f.getName().split("\\.")[0]);
-		List<CDataBasePo> saveList=new ArrayList<>();
+		List<CDataBasePo> saveList = new ArrayList<>();
 		for (String line = di.readLine(); line != null; line = di.readLine()) {
 			String[] cells = line.split("\t");
 			if (cells.length < 6) {
@@ -79,27 +80,27 @@ public class ImportJob {
 			if (count == 0) {
 				try {
 					keys = toKeys(cells);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-			} else if(count>60) {
+			} else if (count > 60) {
 				CDataBasePo po = toPo(id, keys, cells);
-				saveList.add(po);
-			
+				if (po.getId().getDate().getTime() >= Config.startDate.getTime())
+					saveList.add(po);
+
 			}
-			if(saveList.size()>1000)
-			{
+			if (saveList.size() > 1000) {
 				dataBaseDao.save(saveList);
 				saveList.clear();
-				System.err.println("s:"+count);
+				System.err.println("s:" + count);
 			}
 			count++;
 		}
 		dataBaseDao.save(saveList);
-		System.err.println("ok:"+id);
+		System.err.println("ok:" + id);
 	}
-
 
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
@@ -147,7 +148,7 @@ public class ImportJob {
 			}
 			cell = cell.replaceAll("\\.", "");
 			result[i] = cell;
-//			System.err.println(cell);
+			// System.err.println(cell);
 		}
 		return result;
 	}
