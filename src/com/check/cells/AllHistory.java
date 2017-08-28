@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.check.job.LycjssFlagJob.History;
-import com.comfig.Config;
 import com.sql.dao.CHistoryInOutDao;
 import com.sql.domain.CHistoryBuySellPK;
 import com.sql.domain.CHistoryBuySellPo;

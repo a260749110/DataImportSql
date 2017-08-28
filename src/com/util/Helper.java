@@ -1,9 +1,13 @@
 package com.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import com.bigcalculate.cell.CalculateNode;
+import com.comfig.ImportConfig;
 import com.util.MathHelper.IGetValue;
 
 public class Helper {
@@ -285,6 +289,7 @@ public class Helper {
 		}
 		return null;
 	}
+
 	/**
 	 * 
 	 * @param a
@@ -303,7 +308,7 @@ public class Helper {
 				if (field.getType().toString().contains("double")) {
 					field.setAccessible(true);
 
-					double t = (field.getDouble(a) - field.getDouble(b)) ;
+					double t = (field.getDouble(a) - field.getDouble(b));
 
 					field.setDouble(result, t);
 
@@ -316,6 +321,7 @@ public class Helper {
 		}
 		return null;
 	}
+
 	public static class KV {
 		private String k;
 		private double v;
@@ -335,5 +341,56 @@ public class Helper {
 		public void setV(double v) {
 			this.v = v;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> void eachField(Object obj, Class<?> clazz, EachField<T> filed,
+			Class<? extends Annotation> filter) {
+		;
+		Field[] fields = clazz.getDeclaredFields();
+		try {
+
+			for (Field field : fields) {
+				filed.each(field, field.getName(), field.get(obj), (T) field.getAnnotation(filter));
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static interface EachField<T> {
+		public void each(Field field, String name, Object value, T filter);
+	}
+
+	public static CalculateNode randomNode(CalculateNode node) {
+		CalculateNode result = new CalculateNode();
+		result.setScore(node.getScore());
+		for (String k : node.getTodayP().keySet()) {
+			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+				result.getTodayP().put(k, nextRandom());
+			} else {
+				result.getTodayP().put(k, node.getTodayP().get(k));
+			}
+		}
+		for (String k : node.getYestodayP().keySet()) {
+			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+				result.getYestodayP().put(k, nextRandom());
+			} else {
+				result.getYestodayP().put(k, node.getYestodayP().get(k));
+			}
+		}
+		return result = node;
+	}
+
+	private static Random random = new Random();
+
+	public static float nextRandom() {
+		int size = (int) ((ImportConfig.getInstance().getMax_random() - ImportConfig.getInstance().getMin_random())
+				/ ImportConfig.getInstance().getStep_random()) + 1;
+		int ran = random.nextInt(size);
+		float result = ImportConfig.getInstance().getMin_random() + ran * ImportConfig.getInstance().getStep_random();
+
+		return result;
 	}
 }

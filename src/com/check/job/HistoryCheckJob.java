@@ -1,20 +1,18 @@
 package com.check.job;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.check.EcheckType;
 import com.check.cells.AllHistory;
+import com.check.cells.History;
 import com.check.cells.LycjssFlagData;
-import com.check.job.LycjssFlagJob.History;
 import com.check.job.LycjssFlagJob.Other;
 import com.sql.domain.CDataResultPo;
 import com.sql.domain.CDataResultPoPK;
 import com.util.AppContextUtil;
 import com.util.Helper;
-import com.util.MathHelper;
 
 public class HistoryCheckJob {
 	public List<History> historys = new ArrayList<>();

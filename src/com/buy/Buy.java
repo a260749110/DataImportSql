@@ -6,16 +6,15 @@ import java.util.List;
 import com.alibaba.fastjson.JSON;
 import com.check.EcheckType;
 import com.check.cells.AllHistory;
+import com.check.cells.History;
 import com.check.cells.LycjssFlagData;
 import com.check.job.LycjssFlagJob;
-import com.check.job.LycjssFlagJob.History;
 import com.sql.dao.CDataBaseDao;
 import com.sql.dao.CDataBaseResultDao;
 import com.sql.domain.CDataBasePo;
 import com.sql.domain.CDataResultPo;
 import com.sql.domain.CDataResultPoPK;
 import com.util.AppContextUtil;
-import com.util.DateHelper;
 
 public class Buy {
 
