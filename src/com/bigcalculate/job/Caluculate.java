@@ -4,7 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.alibaba.fastjson.JSON;
@@ -41,9 +43,10 @@ public class Caluculate {
 		this.setCalculateNode(calculateNode);
 	}
 
+	public static Map<Long, List<LycjssFlagData>> cacheMap = new HashMap<>();
 	List<LycjssFlagData> datas;
-	double result = 1;
-	static double resultAll = 1;
+	public double result = 1;
+	public double resultAll = 1;
 	public final static double loss = Config.lose_per;
 	public final static double win = Config.win_per;
 	Other other = new Other();
@@ -74,7 +77,6 @@ public class Caluculate {
 		po.setSize(((triCount == 0) ? 0 : useDay / triCount));
 		po.setOther(JSON.toJSONString(other));
 		po.setScore(sl.getScore());
-		DataBaseService.saveSaveOtherData((int) id, other.toSaveOtherData());
 		System.out.println("id :" + id + "  result:" + result + "  avg:" + po.getAvg() + "  use:"
 				+ ((triCount == 0) ? 0 : useDay / triCount) + "   resultAll:" + resultAll);
 	}
@@ -190,9 +192,6 @@ public class Caluculate {
 						days = i - history.index;
 						if (days > Config.max_keep) {
 
-							System.err.println("超时卖出" + "   id:" + id + "  时间: " + history.getStart() + " - "
-									+ dateFormat.format(data.getDate()) + " " + history.startMoney + "-"
-									+ data.getClose());
 							okFlag = true;
 							dif = difC;
 						}
@@ -276,6 +275,10 @@ public class Caluculate {
 
 	private void init(long id) {
 		CDataBaseDao dao = AppContextUtil.getContext().getBean(CDataBaseDao.class);
+		if (cacheMap.containsKey(id)) {
+			datas = cacheMap.get(id);
+			return;
+		}
 		datas = new ArrayList<>();
 		List<CDataBasePo> pos = dao.findById(id);
 		for (int i = 15; i < pos.size(); i++) {
@@ -284,6 +287,7 @@ public class Caluculate {
 			data.setDate(pos.get(i).getId().getDate());
 			datas.add(data);
 		}
+		cacheMap.put(id, datas);
 	}
 
 	public static class Other {
@@ -325,18 +329,41 @@ public class Caluculate {
 	public boolean canBuy(LycjssFlagData now, LycjssFlagData bf) {
 		tempScore = 0;
 		Helper.eachField(now, LycjssFlagData.class, (f, n, v, flter) -> {
+			try {
+				if (flter != null && !((RandomConfig) flter).enable()) {
+					return;
+				}
+				if (!getCalculateNode().getTodayP().containsKey(n)) {
+					getCalculateNode().getTodayP().put(n, ImportConfig.getInstance().getDef_parameter());
+				}
+				tempScore += Float.valueOf(v.toString()) * getCalculateNode().getTodayP().get(n);
+			} catch (Exception e) {
+				System.err.println("name:" + n);
+				e.printStackTrace();
+			}
 
-			if (flter != null && !((RandomConfig) flter).enable()) {
-				return;
-			}
-			if (!getCalculateNode().getTodayP().containsKey(n)) {
-				getCalculateNode().getTodayP().put(n, ImportConfig.getInstance().getDef_parameter());
-			}
-			tempScore += Float.valueOf(v.toString()) * getCalculateNode().getTodayP().get(n);
 		}, RandomConfig.class);
 
-		if (tempScore > 0)
+		Helper.eachField(bf, LycjssFlagData.class, (f, n, v, flter) -> {
+			try {
+				if (flter != null && !((RandomConfig) flter).enable() && !((RandomConfig) flter).calculateYestoday()) {
+					return;
+				}
+
+				if (!getCalculateNode().getYestodayP().containsKey(n)) {
+					getCalculateNode().getYestodayP().put(n, ImportConfig.getInstance().getDef_parameter());
+				}
+				tempScore += Float.valueOf(v.toString()) * getCalculateNode().getYestodayP().get(n);
+			} catch (Exception e) {
+				System.err.println("name:" + n);
+				e.printStackTrace();
+			}
+
+		}, RandomConfig.class);
+
+		if (tempScore > 0) {
 			return true;
+		}
 		return false;
 
 	}

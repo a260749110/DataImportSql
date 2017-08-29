@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
 import com.sql.domain.CDataBasePo;
+import com.util.RandomConfig;
 
 public class LycjssFlagData extends DataBase {
 	private double lycjssFlags = 0;
@@ -31,12 +32,13 @@ public class LycjssFlagData extends DataBase {
 	private double lysarf = 0;
 	private double lysarfVdif = 0;
 
-	
 	public double getLydmiPdi() {
 		return lydmiPdi;
 	}
 
+	@RandomConfig(enable = false, calculateYestoday = false)
 	private Date date;
+	@RandomConfig(enable = false, calculateYestoday = false)
 	private long id;
 	private double start = 0;
 	private double high = 0;
