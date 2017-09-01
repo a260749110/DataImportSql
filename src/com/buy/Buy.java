@@ -38,7 +38,7 @@ public class Buy {
 	public static void main(String[] args) {
 		// CheckMain.refresh();
 
-		Buy buy = new Buy("2017/08/18", 200713, 10000, 22419);
+		Buy buy = new Buy("2017/08/29", 200713, 10000, 22419);
 		buy.run();
 	}
 

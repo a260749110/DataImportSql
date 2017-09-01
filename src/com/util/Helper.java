@@ -351,6 +351,7 @@ public class Helper {
 		try {
 
 			for (Field field : fields) {
+				field.setAccessible(true);
 				filed.each(field, field.getName(), field.get(obj), (T) field.getAnnotation(filter));
 			}
 
@@ -368,7 +369,8 @@ public class Helper {
 		result.setScore(node.getScore());
 		for (String k : node.getTodayP().keySet()) {
 			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-				result.getTodayP().put(k, nextRandom());
+				float next=nextRandom();
+				result.getTodayP().put(k,next);
 			} else {
 				result.getTodayP().put(k, node.getTodayP().get(k));
 			}
@@ -380,7 +382,7 @@ public class Helper {
 				result.getYestodayP().put(k, node.getYestodayP().get(k));
 			}
 		}
-		return result = node;
+		return result ;
 	}
 
 	private static Random random = new Random();
