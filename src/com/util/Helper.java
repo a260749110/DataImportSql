@@ -2,6 +2,7 @@ package com.util;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -322,6 +323,16 @@ public class Helper {
 		return null;
 	}
 
+	public static void showMem() {
+		DecimalFormat df = new DecimalFormat("0.00");
+		long totalMem = Runtime.getRuntime().totalMemory();
+		System.out.println(df.format(totalMem / 1000000F) + " MB");
+		long maxMem = Runtime.getRuntime().maxMemory();
+		System.out.println(df.format(maxMem / 1000000F) + " MB");
+		long freeMem = Runtime.getRuntime().freeMemory();
+		System.out.println(df.format(freeMem / 1000000F) + " MB");
+	}
+
 	public static class KV {
 		private String k;
 		private double v;
@@ -366,23 +377,29 @@ public class Helper {
 
 	public static CalculateNode randomNode(CalculateNode node) {
 		CalculateNode result = new CalculateNode();
+		int i = 0;
 		result.setScore(node.getScore());
 		for (String k : node.getTodayP().keySet()) {
 			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-				float next=nextRandom();
-				result.getTodayP().put(k,next);
+				float next = nextRandom();
+				result.getTodayP().put(k, next);
+				i++;
 			} else {
 				result.getTodayP().put(k, node.getTodayP().get(k));
+				i++;
 			}
 		}
 		for (String k : node.getYestodayP().keySet()) {
 			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+				i++;
 				result.getYestodayP().put(k, nextRandom());
 			} else {
 				result.getYestodayP().put(k, node.getYestodayP().get(k));
+				i++;
 			}
 		}
-		return result ;
+		System.err.println("i:" + i);
+		return result;
 	}
 
 	private static Random random = new Random();
@@ -395,4 +412,6 @@ public class Helper {
 
 		return result;
 	}
+	
+	
 }
