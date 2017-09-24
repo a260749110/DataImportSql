@@ -93,7 +93,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 			LycjssFlagData bbf = datas.get(i - 2);
 			double change = data.getClose() / bf.getClose();
 			if (change > 1.15 || change < 0.85) {
-				System.err.println("erro:" + LycjssFlagJob.dateFormat.format(data.getDate()) + "  " + id + "   "
+				System.err.println("erro:" + dateFormat.format(data.getDate()) + "  " + id + "   "
 						+ data.getClose() + "   " + bf.getClose());
 				histories.clear();
 				continue;
@@ -218,7 +218,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 						long days = 0;
 						try {
 							days = (data.getDate().getTime()
-									- LycjssFlagJob.dateFormat.parse(history.getStart()).getTime())
+									- dateFormat.parse(history.getStart()).getTime())
 									/ (3600l * 1000l * 24l);
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
@@ -441,10 +441,12 @@ public class LycjssFlagJob extends CheckJobsBase {
 			return true;
 
 		}
+		
 		return false;
 	}
 
-	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	private  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
 
 
 }

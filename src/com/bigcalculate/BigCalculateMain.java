@@ -18,6 +18,7 @@ import com.util.Helper;
 public class BigCalculateMain {
 
 	public static void main(String[] args) {
+		System.err.println("run thread:"+ImportConfig.getInstance().getThread_num());
 		Thread t = new Thread() {
 			public void run() {
 				run1();
@@ -26,37 +27,45 @@ public class BigCalculateMain {
 		t.start();
 
 	}
-
+private static int count=0;
 	private static List<CalculateNode> nodes = new ArrayList<>();
 	private static int size = 500;
 
 	private static void run1() {
 		while (true) {
 			try {
-				
+				count++;
 				BigCalculateJob bigCalculateJob = new BigCalculateJob();
 				bigCalculateJob.init();
 
-				int id = nextInt();
-				CBigCalculatePo cb = AppContextUtil.instance.getCBigCalculateDao().findOne(id);
+				CBigCalculatePo cb = Helper.getRandomCalculatePo();
 				if (cb == null) {
 					cb = new CBigCalculatePo();
 				}
 				cb = bigCalculateJob.run(cb);
 				AppContextUtil.instance.getCBigCalculateDao().save(cb);
 				Helper.showMem();
+				if(count<ImportConfig.getInstance().getThread_num())
+				{
+					Thread t = new Thread() {
+						public void run() {
+							try {
+								Thread.sleep(30000L);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							run1();
+						};
+					};
+					t.start();
+				}
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private static Random random = new Random();
-
-	private static int nextInt() {
-		return random.nextInt((int) ImportConfig.getInstance().getMax_size());
-
-	}
 
 	public static void fun() {
 		long id = 1;

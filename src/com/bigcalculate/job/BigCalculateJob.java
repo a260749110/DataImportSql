@@ -92,6 +92,26 @@ public class BigCalculateJob {
 		return calculate;
 	}
 
+	public void run(CalculateNode node) {
+
+		Random random = new Random();
+		DaySimulationJob dj = new DaySimulationJob();
+		float score = 0;
+		for (long id : allIds) {
+			Caluculate caluculate = new Caluculate(node, dj);
+			caluculate.run(id);
+			score += caluculate.resultAll;
+		}
+		try {
+			dj.showFlag=true;
+			dj.toSql();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		
+	}
+
 	private List<CalculateNode> refreshNods(CBigCalculatePo calculate, List<CalculateNode> nodes) {
 		try {
 

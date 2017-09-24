@@ -27,7 +27,8 @@ public class ImportConfig {
 	private Float max_size;
 	@Value("${save_size}")
 	private Integer save_size;
-
+	@Value("${thread_num}")
+	private Integer thread_num;
 	public String getDir() {
 		return dir;
 	}
@@ -112,5 +113,13 @@ public class ImportConfig {
 
 	public void setPre_random(float pre_random) {
 		this.pre_random = pre_random;
+	}
+
+	public Integer getThread_num() {
+		return thread_num;
+	}
+
+	public void setThread_num(Integer thread_num) {
+		this.thread_num = thread_num;
 	}
 }

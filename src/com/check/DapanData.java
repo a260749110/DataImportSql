@@ -1,5 +1,6 @@
 package com.check;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +31,9 @@ public class DapanData {
 		}
 
 	}
-
+	private  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	public boolean canTri(LycjssFlagData data) {
-		String date = LycjssFlagJob.dateFormat.format(data.getDate());
+		String date = dateFormat.format(data.getDate());
 		if (1 > 0) {
 			return true;
 		}

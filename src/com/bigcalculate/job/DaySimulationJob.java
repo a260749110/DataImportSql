@@ -16,7 +16,6 @@ import com.sql.domain.CHistoryInOutPo;
 import com.util.AppContextUtil;
 import com.util.DateHelper;
 import com.util.MathHelper;
-import com.util.MathHelper.IGetValue;
 
 public class DaySimulationJob {
 	List<History> historyList = new ArrayList<>();
@@ -37,10 +36,11 @@ public class DaySimulationJob {
 	public List<NewHistory> historybuyList = new ArrayList<>();
 	Map<String, Double> historyWinloseMap = new HashMap<>();
 	public boolean saveFlag = false;
-	public boolean showFlag = true;
+	public boolean showFlag = false;
 	public boolean saveHistoryFlag = false;
 	public double groupUp = 0.0d;
 	public double groupAll = 0;
+	public DateHelper dateHelper = new DateHelper();
 
 	public void init() {
 		historyMaps.clear();
@@ -64,8 +64,8 @@ public class DaySimulationJob {
 
 	public DaySimulationJob() {
 		try {
-			startDate = DateHelper.dateFormat.parse("2012/1/1");
-			endDate = DateHelper.dateFormat.parse("2017/1/1");
+			startDate = dateHelper.dateFormat.parse("2012/1/1");
+			endDate = dateHelper.dateFormat.parse("2017/1/1");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,13 +93,13 @@ public class DaySimulationJob {
 			historyWinloseMap.put(history.getStart(), winLost);
 			if (spo == null) {
 				spo = new CHistoryInOutPo();
-				spo.setMarkDate(DateHelper.dateFormat.parse(history.getStart()));
+				spo.setMarkDate(dateHelper.dateFormat.parse(history.getStart()));
 				historyMaps.put(history.getStart(), spo);
 				poList.add(spo);
 			}
 			if (epo == null) {
 				epo = new CHistoryInOutPo();
-				epo.setMarkDate(DateHelper.dateFormat.parse(history.getEnd()));
+				epo.setMarkDate(dateHelper.dateFormat.parse(history.getEnd()));
 				historyMaps.put(history.getEnd(), epo);
 				poList.add(epo);
 
@@ -132,8 +132,8 @@ public class DaySimulationJob {
 			@Override
 			public int compare(History o1, History o2) {
 				try {
-					return DateHelper.dateFormat.parse(o1.getStart())
-							.compareTo(DateHelper.dateFormat.parse(o2.getStart()));
+					return dateHelper.dateFormat.parse(o1.getStart())
+							.compareTo(dateHelper.dateFormat.parse(o2.getStart()));
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -153,10 +153,10 @@ public class DaySimulationJob {
 			History history = historyList.get(i);
 			History historyAf = (i < historyList.size() - 1) ? historyList.get(i + 1) : null;
 
-			Date now = DateHelper.dateFormat.parse(history.getStart());
+			Date now = dateHelper.dateFormat.parse(history.getStart());
 
-			String yearNow = DateHelper.dateFormatYear.format(now);
-			String monthNow = DateHelper.dateFormatMM.format(now);
+			String yearNow = dateHelper.dateFormatYear.format(now);
+			String monthNow = dateHelper.dateFormatMM.format(now);
 			if (startDate.after(now))
 				continue;
 			if (yearBefor == null) {
@@ -246,15 +246,15 @@ public class DaySimulationJob {
 			}
 			tempBuyList.clear();
 			for (NewHistory historyBuy : historybuyList) {
-				Date end = DateHelper.dateFormat.parse(historyBuy.history.getEnd());
+				Date end = dateHelper.dateFormat.parse(historyBuy.history.getEnd());
 				if (now.compareTo(end) >= 0 || (i == historyList.size() - 1)) {
 					surplusMoney += (historyBuy.history.getDif() + 1d) * historyBuy.buy;
 					yearResult.count++;
 					moneyALL += (historyBuy.history.getDif() + 1d) * historyBuy.buy - historyBuy.buy;
 					removeList.add(historyBuy);
 
-					yearResult.allUse += (int) ((DateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- DateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					yearResult.allUse += (int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
+							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
 							/ (3600l * 1000l * 24l));
 					if (historyBuy.history.getDif() > 0) {
 						yearResult.success += 1;
@@ -268,15 +268,15 @@ public class DaySimulationJob {
 					CHistoryBuySellPK hbsPk = new CHistoryBuySellPK();
 
 					hbsPk.setId((int) historyBuy.history.getId());
-					hbsPk.setBuyDate(DateHelper.dateFormat.parse(historyBuy.history.getStart()));
-					hbsPk.setSellDate(DateHelper.dateFormat.parse(historyBuy.history.getEnd()));
+					hbsPk.setBuyDate(dateHelper.dateFormat.parse(historyBuy.history.getStart()));
+					hbsPk.setSellDate(dateHelper.dateFormat.parse(historyBuy.history.getEnd()));
 					hbsPo.setId(hbsPk);
 					hbsPo.setBuyMoney(historyBuy.history.getStartMoney());
 					hbsPo.setSellMoney(historyBuy.history.getEndMoney());
 					hbsPo.setDif(historyBuy.history.getDif());
 					hbsPo.setRate(historyBuy.buy);
-					hbsPo.setUserDay((int) ((DateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- DateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					hbsPo.setUserDay((int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
+							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
 							/ (3600l * 1000l * 24l)));
 					if (saveHistoryFlag) {
 						AppContextUtil.instance.getCHistoryBuySellDao().save(hbsPo);
@@ -315,7 +315,7 @@ public class DaySimulationJob {
 
 		wldL.sort((a, b) -> {
 			try {
-				return DateHelper.dateFormat.parse(a.date).compareTo(DateHelper.dateFormat.parse(b.date));
+				return dateHelper.dateFormat.parse(a.date).compareTo(dateHelper.dateFormat.parse(b.date));
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -331,7 +331,7 @@ public class DaySimulationJob {
 
 		buyList.sort((a, b) -> {
 			try {
-				return DateHelper.dateFormat.parse(a.getEnd()).compareTo(DateHelper.dateFormat.parse(b.getEnd()));
+				return dateHelper.dateFormat.parse(a.getEnd()).compareTo(dateHelper.dateFormat.parse(b.getEnd()));
 			} catch (Exception e) {
 				e.printStackTrace();
 				return 0;
@@ -339,8 +339,8 @@ public class DaySimulationJob {
 		});
 		for (History h : buyList) {
 
-			long dDif = (DateHelper.dateFormat.parse(h.getEnd()).getTime()
-					- DateHelper.dateFormat.parse(h.getStart()).getTime()) / (3600l * 1000l * 24l);
+			long dDif = (dateHelper.dateFormat.parse(h.getEnd()).getTime()
+					- dateHelper.dateFormat.parse(h.getStart()).getTime()) / (3600l * 1000l * 24l);
 			allDif += dDif;
 			if (h.takeFlag == true)
 				take++;
@@ -401,47 +401,12 @@ public class DaySimulationJob {
 
 		list.sort((a, b) -> {
 
-			return getSortScore(a) > getSortScore(b) ? 1 : getSortScore(a) == getSortScore(b) ? 0 : -1;
+			return getSortScore(a) > getSortScore(b) ? -1 : getSortScore(a) == getSortScore(b) ? 0 : 1;
 		});
-		List<History> result = new ArrayList<>();
 		List<History> temp = new ArrayList<>();
 		temp.addAll(list);
-//		for (History h : list) {
-//
-//			if (h.bf.getMacdMacd() <= h.bbf.getMacdMacd()) {
-//				//System.err.println("asdasdas!!!!!!!!!!!!!");
-//			}
-//			if (h.bbf.getLycjdmiHightsum() <= h.bbf.getLycjdmiVdif()) {
-//				temp.remove(h);
-//			}
-//		}
-		int index = 0;
-		//
-		int tempi = 0;
-		for (int i = 0; result.size() < size && i < temp.size(); i++) {
-			History t = temp.get(i);
-			if (t.bf.getLycjssFlags() > t.bbf.getLycjssFlags()) {
 
-				result.add(t);
-			}
-		}
-		temp.removeAll(result);
-
-		for (; result.size() < size && temp.size() > 0;) {
-			if ((tempi % 5) < 30) {
-
-				result.add(MathHelper.removeMost(temp, new IGetValue<History>() {
-
-					@Override
-					public double getValue(History t) {
-						return -(Math.round(t.bf.getMacdMacd() / 10) - Math.round(t.bbf.getMacdMacd() / 10));
-					}
-				}));
-			}
-
-			tempi++;
-		}
-		return result;
+		return temp;
 	}
 
 	private void printErr(String str) {

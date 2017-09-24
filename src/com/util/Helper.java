@@ -4,18 +4,23 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import com.alibaba.fastjson.JSONArray;
 import com.bigcalculate.cell.CalculateNode;
+import com.bigcalculate.job.DaySimulationJob;
 import com.comfig.ImportConfig;
+import com.sql.domain.CBigCalculatePo;
 import com.util.MathHelper.IGetValue;
 
 public class Helper {
 	public static <T> T avgList(List<T> list, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 			for (T t : list) {
@@ -47,7 +52,7 @@ public class Helper {
 	public static <T> T varianceList(List<T> list, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -87,7 +92,7 @@ public class Helper {
 	public static <T> T comperList(List<T> list, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -135,7 +140,7 @@ public class Helper {
 	public static <T> T difArv(T a, T b, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -166,7 +171,7 @@ public class Helper {
 	public static <T> T incT(T a, T b, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -198,7 +203,7 @@ public class Helper {
 	public static <T> T incAbsT(T a, double value, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -231,7 +236,7 @@ public class Helper {
 
 		;
 
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			List<KV> result = new ArrayList<Helper.KV>();
 
@@ -268,7 +273,7 @@ public class Helper {
 	public static <T> T containsT(T a, T b, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -301,7 +306,7 @@ public class Helper {
 	public static <T> T mutT(T a, T b, Class<T> clazz) {
 
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 			T result = clazz.newInstance();
 
@@ -354,11 +359,21 @@ public class Helper {
 		}
 	}
 
+	public static Map<String,  Field[]> fieldCache=new HashMap<>();
+	public static Field[] getFieds(Class clazz)
+	{
+		String name=clazz.getName();
+		if(fieldCache.containsKey(name))
+		{
+			return fieldCache.get(name);
+		}
+		return fieldCache.get(name);
+	}
 	@SuppressWarnings("unchecked")
 	public static <T> void eachField(Object obj, Class<?> clazz, EachField<T> filed,
 			Class<? extends Annotation> filter) {
 		;
-		Field[] fields = clazz.getDeclaredFields();
+		Field[] fields = getFieds(clazz);
 		try {
 
 			for (Field field : fields) {
@@ -376,6 +391,91 @@ public class Helper {
 	}
 
 	public static CalculateNode randomNode(CalculateNode node) {
+
+		if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+			return normalRandomNode(node);
+		}
+
+		else {
+			CBigCalculatePo po = getRandomCalculatePo();
+			if (po == null || po.getDataBase() == null || po.getDataBase().length() == 0) {
+				return normalRandomNode(node);
+			} else {
+				List<CalculateNode> nodes = null;
+
+				try {
+					nodes = JSONArray.parseArray(po.getDataBase(), CalculateNode.class);
+				} catch (Exception e) {
+					e.printStackTrace();
+					nodes = new ArrayList<>();
+				}
+
+				DaySimulationJob dj = new DaySimulationJob();
+
+				CalculateNode mother = new CalculateNode();
+
+				Random random = new Random();
+				if (nodes.size() >= ImportConfig.getInstance().getSave_size()) {
+					mother = nodes.get(random.nextInt(nodes.size()));
+				} else {
+					return normalRandomNode(node);
+				}
+				return switchRandomNode(node, mother);
+			}
+		}
+	}
+
+	private static CalculateNode switchRandomNode(CalculateNode father, CalculateNode mother) {
+		CalculateNode result = new CalculateNode();
+		result.setScore(0);
+		for (String k : father.getTodayP().keySet()) {
+			if (random.nextFloat() < 0.5f) {
+				if (father.getTodayP().containsKey(k)) {
+					result.getTodayP().put(k, father.getTodayP().get(k));
+				} else {
+					result.getTodayP().put(k, 0f);
+				}
+				
+				if (mother.getYestodayP().containsKey(k)) {
+					result.getYestodayP().put(k, mother.getYestodayP().get(k));
+				} else {
+					result.getYestodayP().put(k, 0f);
+				}
+				
+			} else {
+				if (mother.getTodayP().containsKey(k)) {
+					result.getTodayP().put(k, mother.getTodayP().get(k));
+				} else {
+					result.getTodayP().put(k, 0f);
+				}
+				
+				
+				if (father.getYestodayP().containsKey(k)) {
+					result.getYestodayP().put(k, father.getYestodayP().get(k));
+				} else {
+					result.getYestodayP().put(k, 0f);
+				}
+				
+			}
+
+		}
+		for (String k : father.getYestodayP().keySet()) {
+			if (random.nextFloat() < 0.5f) {
+				result.getYestodayP().put(k, father.getYestodayP().get(k));
+			} else {
+				if (mother.getYestodayP().containsKey(k)) {
+					result.getYestodayP().put(k, mother.getYestodayP().get(k));
+				} else {
+					result.getYestodayP().put(k, 0f);
+				}
+			}
+
+		}
+
+		return result;
+	}
+
+	private static CalculateNode normalRandomNode(CalculateNode node) {
 		CalculateNode result = new CalculateNode();
 		int i = 0;
 		result.setScore(node.getScore());
@@ -388,6 +488,7 @@ public class Helper {
 				result.getTodayP().put(k, node.getTodayP().get(k));
 				i++;
 			}
+
 		}
 		for (String k : node.getYestodayP().keySet()) {
 			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
@@ -402,6 +503,22 @@ public class Helper {
 		return result;
 	}
 
+	private static int nextInt() {
+		return random.nextInt((int) ImportConfig.getInstance().getMax_size()) + 1;
+
+	}
+
+	public static CBigCalculatePo getRandomCalculatePo() {
+
+		int id = nextInt();
+		CBigCalculatePo cb = AppContextUtil.instance.getCBigCalculateDao().findOne(id);
+		if (cb == null) {
+			cb = new CBigCalculatePo();
+		}
+		return cb;
+
+	}
+
 	private static Random random = new Random();
 
 	public static float nextRandom() {
@@ -412,6 +529,5 @@ public class Helper {
 
 		return result;
 	}
-	
-	
+
 }

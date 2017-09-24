@@ -41,7 +41,6 @@ public class Caluculate {
 		this.setCalculateNode(calculateNode);
 		allHistory = daySimulationJob;
 	}
-
 	public static Map<Long, List<LycjssFlagData>> cacheMap = new HashMap<>();
 	List<LycjssFlagData> datas;
 	public double result = 1;
@@ -52,14 +51,14 @@ public class Caluculate {
 	ScoreColdList sl = new ScoreColdList(50);
 	int useDay = 0;
 	int triCount = 0;
-	public static long success = 0;
-	public static long unSuccess = 0;
+	public  long success = 0;
+	public  long unSuccess = 0;
 	public DaySimulationJob allHistory;
 	long id;
 	private double buyPoint = 1.003;
-	public static SuccessScore successScore = new SuccessScore();
+	public  SuccessScore successScore = new SuccessScore();
 	public AllDatas allDatas = new AllDatas();
-	public static int tempCount = 0;
+	public  int tempCount = 0;
 
 	public void run(long id) {
 		this.id = id;
@@ -88,7 +87,7 @@ public class Caluculate {
 			LycjssFlagData bbf = datas.get(i - 2);
 			double change = data.getClose() / bf.getClose();
 			if (change > 1.15 || change < 0.85) {
-				System.err.println("erro:" + LycjssFlagJob.dateFormat.format(data.getDate()) + "  " + id + "   "
+				System.err.println("erro:" + dateFormat.format(data.getDate()) + "  " + id + "   "
 						+ data.getClose() + "   " + bf.getClose());
 				histories.clear();
 				continue;
@@ -101,7 +100,7 @@ public class Caluculate {
 				history.start = dateFormat.format(data.getDate());
 				history.startMoney = buyMoney(data, bf, buyPoint);
 				histories.add(history);
-				history.setScore(sl.getScore());
+				history.setScore(tempScore);
 				history.now = data;
 				history.bf = bf;
 				history.bbf = bbf;
@@ -159,7 +158,7 @@ public class Caluculate {
 						} else {
 							if (bdifL <= loss && difTH < -0.099) {
 
-								System.err.println("跌停无法出售" + " id:" + id + " 时间:" + dateFormat.format(data.getDate()));
+								//System.err.println("跌停无法出售" + " id:" + id + " 时间:" + dateFormat.format(data.getDate()));
 							}
 						}
 					}
@@ -174,9 +173,10 @@ public class Caluculate {
 						long days = 0;
 						try {
 							days = (data.getDate().getTime()
-									- LycjssFlagJob.dateFormat.parse(history.getStart()).getTime())
+									- dateFormat.parse(history.getStart()).getTime())
 									/ (3600l * 1000l * 24l);
 						} catch (ParseException e) {
+							System.err.println(history.getStart());
 							e.printStackTrace();
 						}
 						days = i - history.index;
@@ -267,9 +267,9 @@ public class Caluculate {
 		if (cacheMap.containsKey(id)) {
 
 			datas = cacheMap.get(id);
-			String js = JSONArray.toJSONString(datas);
-			List<LycjssFlagData> tempD = JSONArray.parseArray(js, LycjssFlagData.class);
-			datas = tempD;
+//			String js = JSONArray.toJSONString(datas);
+//			List<LycjssFlagData> tempD = JSONArray.parseArray(js, LycjssFlagData.class);
+//			datas = tempD;
 			return;
 		}
 		datas = new ArrayList<>();
@@ -365,13 +365,13 @@ public class Caluculate {
 
 	public static boolean canBuy(double score) {
 
-		if (score < 1) {
-			double rand = random.nextDouble();
-			rand = Math.pow(rand, 1);
-			if (rand > score) {
-				return true;
-			}
-		}
+		// if (score < 1) {
+		// double rand = random.nextDouble();
+		// rand = Math.pow(rand, 1);
+		// if (rand > score) {
+		// return true;
+		// }
+		// }
 		return true;
 	}
 
@@ -396,6 +396,6 @@ public class Caluculate {
 		this.calculateNode = calculateNode;
 	}
 
-	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	public  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 }
