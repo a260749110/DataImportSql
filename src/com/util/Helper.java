@@ -367,6 +367,7 @@ public class Helper {
 		{
 			return fieldCache.get(name);
 		}
+		fieldCache.put(name,  clazz.getDeclaredFields());
 		return fieldCache.get(name);
 	}
 	@SuppressWarnings("unchecked")
