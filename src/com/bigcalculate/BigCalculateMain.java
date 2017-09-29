@@ -18,7 +18,7 @@ import com.util.Helper;
 public class BigCalculateMain {
 
 	public static void main(String[] args) {
-		System.err.println("run thread:"+ImportConfig.getInstance().getThread_num());
+		System.err.println("run thread:" + ImportConfig.getInstance().getThread_num());
 		Thread t = new Thread() {
 			public void run() {
 				run1();
@@ -27,13 +27,18 @@ public class BigCalculateMain {
 		t.start();
 
 	}
-private static int count=0;
+
+	private static int count = 0;
 	private static List<CalculateNode> nodes = new ArrayList<>();
 	private static int size = 500;
-
+	private static long allTime=0;
+	private static int allCount=0;
 	private static void run1() {
+		int tc=count;
 		while (true) {
 			try {
+				long start=System.currentTimeMillis();
+				allCount++;
 				count++;
 				BigCalculateJob bigCalculateJob = new BigCalculateJob();
 				bigCalculateJob.init();
@@ -60,12 +65,14 @@ private static int count=0;
 					};
 					t.start();
 				}
+				System.err.println(tc+"  :use:" +(-((double)start-(double)System.currentTimeMillis())/60000d)+"∑÷÷”");
+				allTime+=System.currentTimeMillis()-start;
+				System.err.println(tc+"  :all use:" +(((float)(allTime/allCount))/60000f)+"∑÷÷”");
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
 
 	public static void fun() {
 		long id = 1;
