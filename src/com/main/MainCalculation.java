@@ -1,7 +1,5 @@
 package com.main;
 
-import org.json.JSONArray;
-
 import com.sql.dao.ParameterDao;
 import com.sql.domain.ParameterPo;
 import com.util.AppContextUtil;

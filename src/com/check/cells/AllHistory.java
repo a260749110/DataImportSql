@@ -24,6 +24,7 @@ public class AllHistory {
 	public static double INIT_MONEY = 20; /// 112 :30±¶
 	public double targetSize = 20;
 	public double defMoney = INIT_MONEY;
+	public DateHelper dateHelper=new DateHelper();
 	/**
 	 * Ê£Óà½ðÇ®
 	 */
@@ -64,8 +65,8 @@ public class AllHistory {
 
 	public AllHistory() {
 		try {
-			startDate = DateHelper.dateFormat.parse("2012/1/1");
-			endDate = DateHelper.dateFormat.parse("2017/1/1");
+			startDate = dateHelper.dateFormat.parse("2012/1/1");
+			endDate = dateHelper.dateFormat.parse("2017/1/1");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,13 +94,13 @@ public class AllHistory {
 			historyWinloseMap.put(history.getStart(), winLost);
 			if (spo == null) {
 				spo = new CHistoryInOutPo();
-				spo.setMarkDate(DateHelper.dateFormat.parse(history.getStart()));
+				spo.setMarkDate(dateHelper.dateFormat.parse(history.getStart()));
 				historyMaps.put(history.getStart(), spo);
 				poList.add(spo);
 			}
 			if (epo == null) {
 				epo = new CHistoryInOutPo();
-				epo.setMarkDate(DateHelper.dateFormat.parse(history.getEnd()));
+				epo.setMarkDate(dateHelper.dateFormat.parse(history.getEnd()));
 				historyMaps.put(history.getEnd(), epo);
 				poList.add(epo);
 
@@ -135,8 +136,8 @@ public class AllHistory {
 			@Override
 			public int compare(History o1, History o2) {
 				try {
-					return DateHelper.dateFormat.parse(o1.getStart())
-							.compareTo(DateHelper.dateFormat.parse(o2.getStart()));
+					return dateHelper.dateFormat.parse(o1.getStart())
+							.compareTo(dateHelper.dateFormat.parse(o2.getStart()));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -158,10 +159,10 @@ public class AllHistory {
 			History history = historyList.get(i);
 			History historyAf = (i < historyList.size() - 1) ? historyList.get(i + 1) : null;
 
-			Date now = DateHelper.dateFormat.parse(history.getStart());
+			Date now = dateHelper.dateFormat.parse(history.getStart());
 
-			String yearNow = DateHelper.dateFormatYear.format(now);
-			String monthNow = DateHelper.dateFormatMM.format(now);
+			String yearNow = dateHelper.dateFormatYear.format(now);
+			String monthNow = dateHelper.dateFormatMM.format(now);
 			if (startDate.after(now))
 				continue;
 			if (yearBefor == null) {
@@ -267,7 +268,7 @@ public class AllHistory {
 			}
 			tempBuyList.clear();
 			for (NewHistory historyBuy : historybuyList) {
-				Date end = DateHelper.dateFormat.parse(historyBuy.history.getEnd());
+				Date end = dateHelper.dateFormat.parse(historyBuy.history.getEnd());
 				// System.err.println(now +" "+end);
 				if (now.compareTo(end) >= 0 || (i == historyList.size() - 1)) {
 					surplusMoney += (historyBuy.history.getDif() + 1d) * historyBuy.buy;
@@ -275,8 +276,8 @@ public class AllHistory {
 					moneyALL += (historyBuy.history.getDif() + 1d) * historyBuy.buy - historyBuy.buy;
 					removeList.add(historyBuy);
 
-					yearResult.allUse += (int) ((DateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- DateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					yearResult.allUse += (int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
+							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
 							/ (3600l * 1000l * 24l));
 					if (historyBuy.history.getDif() > 0) {
 						yearResult.success += 1;
@@ -290,15 +291,15 @@ public class AllHistory {
 					CHistoryBuySellPK hbsPk = new CHistoryBuySellPK();
 
 					hbsPk.setId((int) historyBuy.history.getId());
-					hbsPk.setBuyDate(DateHelper.dateFormat.parse(historyBuy.history.getStart()));
-					hbsPk.setSellDate(DateHelper.dateFormat.parse(historyBuy.history.getEnd()));
+					hbsPk.setBuyDate(dateHelper.dateFormat.parse(historyBuy.history.getStart()));
+					hbsPk.setSellDate(dateHelper.dateFormat.parse(historyBuy.history.getEnd()));
 					hbsPo.setId(hbsPk);
 					hbsPo.setBuyMoney(historyBuy.history.getStartMoney());
 					hbsPo.setSellMoney(historyBuy.history.getEndMoney());
 					hbsPo.setDif(historyBuy.history.getDif());
 					hbsPo.setRate(historyBuy.buy);
-					hbsPo.setUserDay((int) ((DateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- DateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					hbsPo.setUserDay((int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
+							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
 							/ (3600l * 1000l * 24l)));
 					if (saveHistoryFlag) {
 						AppContextUtil.instance.getCHistoryBuySellDao().save(hbsPo);
@@ -337,7 +338,7 @@ public class AllHistory {
 
 		wldL.sort((a, b) -> {
 			try {
-				return DateHelper.dateFormat.parse(a.date).compareTo(DateHelper.dateFormat.parse(b.date));
+				return dateHelper.dateFormat.parse(a.date).compareTo(dateHelper.dateFormat.parse(b.date));
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -353,7 +354,7 @@ public class AllHistory {
 
 		buyList.sort((a, b) -> {
 			try {
-				return DateHelper.dateFormat.parse(a.getEnd()).compareTo(DateHelper.dateFormat.parse(b.getEnd()));
+				return dateHelper.dateFormat.parse(a.getEnd()).compareTo(dateHelper.dateFormat.parse(b.getEnd()));
 			} catch (Exception e) {
 				e.printStackTrace();
 				return 0;
@@ -361,8 +362,8 @@ public class AllHistory {
 		});
 		for (History h : buyList) {
 
-			long dDif = (DateHelper.dateFormat.parse(h.getEnd()).getTime()
-					- DateHelper.dateFormat.parse(h.getStart()).getTime()) / (3600l * 1000l * 24l);
+			long dDif = (dateHelper.dateFormat.parse(h.getEnd()).getTime()
+					- dateHelper.dateFormat.parse(h.getStart()).getTime()) / (3600l * 1000l * 24l);
 			allDif += dDif;
 			if (h.takeFlag == true)
 				take++;

@@ -7,7 +7,7 @@ public class CalculateNode {
 	private Map<String, Float> todayP = new HashMap<>();
 	private Map<String, Float> yestodayP = new HashMap<>();
 	private float score;
-
+	private float sScore;
 	public Map<String, Float> getTodayP() {
 		return todayP;
 	}
@@ -30,5 +30,13 @@ public class CalculateNode {
 
 	public void setScore(float score) {
 		this.score = score;
+	}
+
+	public float getsScore() {
+		return sScore;
+	}
+
+	public void setsScore(float sScore) {
+		this.sScore = sScore;
 	}
 }

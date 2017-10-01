@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.Random;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.bigcalculate.cell.CalculateNode;
 import com.check.EcheckType;
 import com.check.cells.AllDatas;
-import com.check.cells.AllHistory;
 import com.check.cells.History;
 import com.check.cells.LycjssFlagData;
 import com.check.cells.SaveOtherData;
@@ -23,11 +23,9 @@ import com.check.job.LycjssFlagJob;
 import com.comfig.Config;
 import com.comfig.ImportConfig;
 import com.sql.dao.CDataBaseDao;
-import com.sql.dao.CDataBaseResultDao;
 import com.sql.domain.CDataBasePo;
 import com.sql.domain.CDataResultPo;
 import com.sql.domain.CDataResultPoPK;
-import com.sql.util.DataBaseService;
 import com.util.AppContextUtil;
 import com.util.Helper;
 import com.util.MathHelper;
@@ -38,11 +36,11 @@ public class Caluculate {
 
 	private CalculateNode calculateNode;
 
-	public Caluculate(CalculateNode calculateNode) {
+	public Caluculate(CalculateNode calculateNode, DaySimulationJob daySimulationJob) {
 
 		this.setCalculateNode(calculateNode);
+		allHistory = daySimulationJob;
 	}
-
 	public static Map<Long, List<LycjssFlagData>> cacheMap = new HashMap<>();
 	List<LycjssFlagData> datas;
 	public double result = 1;
@@ -53,32 +51,23 @@ public class Caluculate {
 	ScoreColdList sl = new ScoreColdList(50);
 	int useDay = 0;
 	int triCount = 0;
-	public static long success = 0;
-	public static long unSuccess = 0;
-	public static AllHistory allHistory = new AllHistory();
+	public  long success = 0;
+	public  long unSuccess = 0;
+	public DaySimulationJob allHistory;
 	long id;
 	private double buyPoint = 1.003;
-	public static SuccessScore successScore = new SuccessScore();
+	public  SuccessScore successScore = new SuccessScore();
 	public AllDatas allDatas = new AllDatas();
+	public  int tempCount = 0;
 
 	public void run(long id) {
 		this.id = id;
 		init(id);
 		iteration();
-		CDataBaseResultDao dao = AppContextUtil.getContext().getBean(CDataBaseResultDao.class);
-		CDataResultPo po = new CDataResultPo();
-		CDataResultPoPK pk = new CDataResultPoPK();
-		pk.setId(id);
-		pk.setType(EcheckType.LYCJSS_FLAG.toString());
-		po.setId(pk);
-		po.setAvg((useDay == 0) ? 0 : (result - 1) / (double) useDay);
-		po.setResult(result);
-
-		po.setSize(((triCount == 0) ? 0 : useDay / triCount));
-		po.setOther(JSON.toJSONString(other));
-		po.setScore(sl.getScore());
-		System.out.println("id :" + id + "  result:" + result + "  avg:" + po.getAvg() + "  use:"
-				+ ((triCount == 0) ? 0 : useDay / triCount) + "   resultAll:" + resultAll);
+		tempCount++;
+		if (tempCount % 100 == 0)
+			System.out.println("id :" + id + "  result:" + result + "  use:" + ((triCount == 0) ? 0 : useDay / triCount)
+					+ "   resultAll:" + resultAll);
 	}
 
 	private void iteration() {
@@ -98,7 +87,7 @@ public class Caluculate {
 			LycjssFlagData bbf = datas.get(i - 2);
 			double change = data.getClose() / bf.getClose();
 			if (change > 1.15 || change < 0.85) {
-				System.err.println("erro:" + LycjssFlagJob.dateFormat.format(data.getDate()) + "  " + id + "   "
+				System.err.println("erro:" + dateFormat.format(data.getDate()) + "  " + id + "   "
 						+ data.getClose() + "   " + bf.getClose());
 				histories.clear();
 				continue;
@@ -111,7 +100,7 @@ public class Caluculate {
 				history.start = dateFormat.format(data.getDate());
 				history.startMoney = buyMoney(data, bf, buyPoint);
 				histories.add(history);
-				history.setScore(sl.getScore());
+				history.setScore(tempScore);
 				history.now = data;
 				history.bf = bf;
 				history.bbf = bbf;
@@ -169,7 +158,7 @@ public class Caluculate {
 						} else {
 							if (bdifL <= loss && difTH < -0.099) {
 
-								System.err.println("跌停无法出售" + " id:" + id + " 时间:" + dateFormat.format(data.getDate()));
+								//System.err.println("跌停无法出售" + " id:" + id + " 时间:" + dateFormat.format(data.getDate()));
 							}
 						}
 					}
@@ -184,9 +173,10 @@ public class Caluculate {
 						long days = 0;
 						try {
 							days = (data.getDate().getTime()
-									- LycjssFlagJob.dateFormat.parse(history.getStart()).getTime())
+									- dateFormat.parse(history.getStart()).getTime())
 									/ (3600l * 1000l * 24l);
 						} catch (ParseException e) {
+							System.err.println(history.getStart());
 							e.printStackTrace();
 						}
 						days = i - history.index;
@@ -270,13 +260,16 @@ public class Caluculate {
 				histories.removeAll(removeList);
 			}
 		}
-		System.out.println("count:" + count);
 	}
 
 	private void init(long id) {
 		CDataBaseDao dao = AppContextUtil.getContext().getBean(CDataBaseDao.class);
 		if (cacheMap.containsKey(id)) {
+
 			datas = cacheMap.get(id);
+//			String js = JSONArray.toJSONString(datas);
+//			List<LycjssFlagData> tempD = JSONArray.parseArray(js, LycjssFlagData.class);
+//			datas = tempD;
 			return;
 		}
 		datas = new ArrayList<>();
@@ -287,7 +280,9 @@ public class Caluculate {
 			data.setDate(pos.get(i).getId().getDate());
 			datas.add(data);
 		}
-		cacheMap.put(id, datas);
+		String js = JSONArray.toJSONString(datas);
+		List<LycjssFlagData> tempD = JSONArray.parseArray(js, LycjssFlagData.class);
+		cacheMap.put(id, tempD);
 	}
 
 	public static class Other {
@@ -370,13 +365,13 @@ public class Caluculate {
 
 	public static boolean canBuy(double score) {
 
-		if (score < 1) {
-			double rand = random.nextDouble();
-			rand = Math.pow(rand, 1);
-			if (rand > score) {
-				return true;
-			}
-		}
+		// if (score < 1) {
+		// double rand = random.nextDouble();
+		// rand = Math.pow(rand, 1);
+		// if (rand > score) {
+		// return true;
+		// }
+		// }
 		return true;
 	}
 
@@ -401,6 +396,6 @@ public class Caluculate {
 		this.calculateNode = calculateNode;
 	}
 
-	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	public  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 }

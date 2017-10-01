@@ -1,5 +1,6 @@
 package com.comfig;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.check.job.LycjssFlagJob;
@@ -14,7 +15,8 @@ public static double h_pr=1.09;
 public static boolean h_pr_Flag=false; 
 public static int return_size=10; 
 public static Date startDate= new Date(1167580800000L);
+private  static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 public static void main(String[] args) {
-	System.err.println(LycjssFlagJob.dateFormat.format(startDate));
+	System.err.println(dateFormat.format(startDate));
 }
 }

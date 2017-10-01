@@ -31,6 +31,14 @@ public class LycjssFlagData extends DataBase {
 	private double lysarfVsumdif = 0;
 	private double lysarf = 0;
 	private double lysarfVdif = 0;
+	private double ttttC = 0;
+	private double ttttSumrc = 0;
+	private double ttttZ = 0;
+	private double ttttR = 0;
+	private double ttttAll;
+	private double ttttDifrc;
+	private double ttttSumtt;
+	private double ttttFcd;;
 
 	public double getLydmiPdi() {
 		return lydmiPdi;
@@ -100,6 +108,70 @@ public class LycjssFlagData extends DataBase {
 
 	public void setDeal(double deal) {
 		this.deal = deal;
+	}
+
+	public double getTtttC() {
+		return ttttC;
+	}
+
+	public void setTtttC(double ttttC) {
+		this.ttttC = ttttC;
+	}
+
+	public double getTtttSumrc() {
+		return ttttSumrc;
+	}
+
+	public void setTtttSumrc(double ttttSumrc) {
+		this.ttttSumrc = ttttSumrc;
+	}
+
+	public double getTtttZ() {
+		return ttttZ;
+	}
+
+	public void setTtttZ(double ttttZ) {
+		this.ttttZ = ttttZ;
+	}
+
+	public double getTtttR() {
+		return ttttR;
+	}
+
+	public void setTtttR(double ttttR) {
+		this.ttttR = ttttR;
+	}
+
+	public double getTtttAll() {
+		return ttttAll;
+	}
+
+	public void setTtttAll(double ttttAll) {
+		this.ttttAll = ttttAll;
+	}
+
+	public double getTtttDifrc() {
+		return ttttDifrc;
+	}
+
+	public void setTtttDifrc(double ttttDifrc) {
+		this.ttttDifrc = ttttDifrc;
+	}
+
+	public double getTtttSumtt() {
+		return ttttSumtt;
+	}
+
+	public void setTtttSumtt(double ttttSumtt) {
+		this.ttttSumtt = ttttSumtt;
+	}
+
+	public double getTtttFcd() {
+		return ttttFcd;
+	}
+
+	public void setTtttFcd(double ttttFcd) {
+		this.ttttFcd = ttttFcd;
 	}
 
 	public void setLydmiPdi(double lydmiPdi) {
