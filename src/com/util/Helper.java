@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.bigcalculate.cell.CalculateNode;
 import com.bigcalculate.job.DaySimulationJob;
@@ -359,17 +360,17 @@ public class Helper {
 		}
 	}
 
-	public static Map<String,  Field[]> fieldCache=new HashMap<>();
-	public static Field[] getFieds(Class clazz)
-	{
-		String name=clazz.getName();
-		if(fieldCache.containsKey(name))
-		{
+	public static Map<String, Field[]> fieldCache = new HashMap<>();
+
+	public static Field[] getFieds(Class clazz) {
+		String name = clazz.getName();
+		if (fieldCache.containsKey(name)) {
 			return fieldCache.get(name);
 		}
-		fieldCache.put(name,  clazz.getDeclaredFields());
+		fieldCache.put(name, clazz.getDeclaredFields());
 		return fieldCache.get(name);
 	}
+
 	@SuppressWarnings("unchecked")
 	public static <T> void eachField(Object obj, Class<?> clazz, EachField<T> filed,
 			Class<? extends Annotation> filter) {
@@ -393,7 +394,7 @@ public class Helper {
 
 	public static CalculateNode randomNode(CalculateNode node) {
 
-		if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+		if (random.nextFloat() >= ImportConfig.getInstance().getSwap_per()) {
 			return normalRandomNode(node);
 		}
 
@@ -418,6 +419,8 @@ public class Helper {
 				Random random = new Random();
 				if (nodes.size() >= ImportConfig.getInstance().getSave_size()) {
 					mother = nodes.get(random.nextInt(nodes.size()));
+					Helper.initNode(mother, ImportConfig.getInstance().getSampleSize());
+
 				} else {
 					return normalRandomNode(node);
 				}
@@ -426,51 +429,61 @@ public class Helper {
 		}
 	}
 
+	public static CalculateNode initNode(CalculateNode node, int size) {
+
+		if (node.getParMapList().size() == 0) {
+			if (node.getTodayP() != null) {
+				node.getParMapList().add(copyMap(node.getTodayP()));
+			} else {
+				Map<String, Float> map = new HashMap<>();
+				node.getParMapList().add(map);
+			}
+			if (node.getYestodayP() != null) {
+				node.getParMapList().add(copyMap(node.getYestodayP()));
+			} else {
+				Map<String, Float> map = new HashMap<>();
+				node.getParMapList().add(map);
+			}
+		}
+		for (int i = node.getParMapList().size(); i < size; i++) {
+			Map<String, Float> map = new HashMap<>();
+			node.getParMapList().add(map);
+		}
+		System.err.println(JSON.toJSONString(node));
+		return node;
+	}
+
+	private static Map<String, Float> copyMap(Map<String, Float> fo) {
+		Map<String, Float> map = new HashMap<>();
+		for (String k : fo.keySet()) {
+			map.put(k, fo.get(k));
+		}
+		return map;
+	}
+
 	private static CalculateNode switchRandomNode(CalculateNode father, CalculateNode mother) {
+		System.err.println("swap !!!");
 		CalculateNode result = new CalculateNode();
 		result.setScore(0);
-		for (String k : father.getTodayP().keySet()) {
-			if (random.nextFloat() < 0.5f) {
-				if (father.getTodayP().containsKey(k)) {
-					result.getTodayP().put(k, father.getTodayP().get(k));
-				} else {
-					result.getTodayP().put(k, 0f);
-				}
-				
-				if (mother.getYestodayP().containsKey(k)) {
-					result.getYestodayP().put(k, mother.getYestodayP().get(k));
-				} else {
-					result.getYestodayP().put(k, 0f);
-				}
-				
-			} else {
-				if (mother.getTodayP().containsKey(k)) {
-					result.getTodayP().put(k, mother.getTodayP().get(k));
-				} else {
-					result.getTodayP().put(k, 0f);
-				}
-				
-				
-				if (father.getYestodayP().containsKey(k)) {
-					result.getYestodayP().put(k, father.getYestodayP().get(k));
-				} else {
-					result.getYestodayP().put(k, 0f);
-				}
-				
-			}
+		for (int i = 0; i < ImportConfig.getInstance().getSampleSize(); i++) {
+			Map<String, Float> fatherMap = father.getParMapList().get(i);
+			Map<String, Float> motherMap = mother.getParMapList().get(i);
+			Map<String, Float> somMap = new HashMap<>();
+			for (String k : fatherMap.keySet()) {
+				if (random.nextFloat() < 0.5f) {
 
-		}
-		for (String k : father.getYestodayP().keySet()) {
-			if (random.nextFloat() < 0.5f) {
-				result.getYestodayP().put(k, father.getYestodayP().get(k));
-			} else {
-				if (mother.getYestodayP().containsKey(k)) {
-					result.getYestodayP().put(k, mother.getYestodayP().get(k));
-				} else {
-					result.getYestodayP().put(k, 0f);
-				}
-			}
+					somMap.put(k, fatherMap.get(k));
 
+				} else {
+					if (motherMap.containsKey(k)) {
+						somMap.put(k, motherMap.get(k));
+					} else {
+						somMap.put(k, 0f);
+					}
+				}
+
+			}
+			result.getParMapList().add(somMap);
 		}
 
 		return result;
@@ -480,27 +493,45 @@ public class Helper {
 		CalculateNode result = new CalculateNode();
 		int i = 0;
 		result.setScore(node.getScore());
-		for (String k : node.getTodayP().keySet()) {
-			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-				float next = nextRandom();
-				result.getTodayP().put(k, next);
-				i++;
-			} else {
-				result.getTodayP().put(k, node.getTodayP().get(k));
-				i++;
+
+		for (int j = 0; j < ImportConfig.getInstance().getSampleSize(); j++) {
+			Map<String, Float> map = node.getParMapList().get(j);
+			for (String k : map.keySet()) {
+				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+					float next = nextRandom();
+					map.put(k, next);
+				} else {
+					map.put(k, map.get(k));
+				}
+
 			}
 
+			result.getParMapList().add(map);
 		}
-		for (String k : node.getYestodayP().keySet()) {
-			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-				i++;
-				result.getYestodayP().put(k, nextRandom());
-			} else {
-				result.getYestodayP().put(k, node.getYestodayP().get(k));
-				i++;
-			}
-		}
-		System.err.println("i:" + i);
+
+		// for (String k : node.getTodayP().keySet()) {
+		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
+		// {
+		// float next = nextRandom();
+		// result.getTodayP().put(k, next);
+		// i++;
+		// } else {
+		// result.getTodayP().put(k, node.getTodayP().get(k));
+		// i++;
+		// }
+		//
+		// }
+		// for (String k : node.getYestodayP().keySet()) {
+		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
+		// {
+		// i++;
+		// result.getYestodayP().put(k, nextRandom());
+		// } else {
+		// result.getYestodayP().put(k, node.getYestodayP().get(k));
+		// i++;
+		// }
+		// }
+		// System.err.println("i:" + i);
 		return result;
 	}
 

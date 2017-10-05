@@ -184,6 +184,7 @@ public class DaySimulationJob {
 				yearResult = new YearResult();
 				yearResult.year = yearNow;
 				yearResult.startMoney = moneyALL;
+				
 
 				yearBefor = yearNow;
 			}

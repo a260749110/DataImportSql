@@ -2,11 +2,15 @@ package com.bigcalculate.job;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.alibaba.fastjson.JSONArray;
 import com.bigcalculate.cell.CalculateNode;
+import com.bigcalculate.job.DaySimulationJob.ConfigAndReesult;
+import com.bigcalculate.job.DaySimulationJob.YearResult;
 import com.comfig.ImportConfig;
 import com.sql.dao.CDataBaseDao;
 import com.sql.domain.CBigCalculatePo;
@@ -46,6 +50,9 @@ public class BigCalculateJob {
 			System.err.println("new");
 			node = new CalculateNode();
 		}
+
+		Helper.initNode(node, ImportConfig.getInstance().getSampleSize());
+
 		node = Helper.randomNode(node);
 		float score = 0;
 		for (long id : allIds) {
@@ -54,12 +61,21 @@ public class BigCalculateJob {
 			score += caluculate.resultAll;
 		}
 		try {
-			dj.toSql();
+			ConfigAndReesult rs = dj.toSql();
+			int i = 0;
+			for (YearResult ye : rs.yearResults) {
+				i++;
+				if (i == rs.yearResults.size()) {
+					node.setScore((float) ye.startMoney);
+				}
+				node.getYearInfo().put(ye.year, ye);
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		node.setScore((float) score);
+		// node.setScore((float) score);
 		node.setsScore((float) dj.moneyALL);
+
 		nodes = refreshNods(calculate, nodes);
 		nodes.add(node);
 		CalculateNode nodeRemove = null;
@@ -103,13 +119,12 @@ public class BigCalculateJob {
 			score += caluculate.resultAll;
 		}
 		try {
-			dj.showFlag=true;
+			dj.showFlag = true;
 			dj.toSql();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
-		
 	}
 
 	private List<CalculateNode> refreshNods(CBigCalculatePo calculate, List<CalculateNode> nodes) {

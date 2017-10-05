@@ -2,7 +2,9 @@ package com.bigcalculate;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import com.alibaba.fastjson.JSON;
@@ -31,13 +33,14 @@ public class BigCalculateMain {
 	private static int count = 0;
 	private static List<CalculateNode> nodes = new ArrayList<>();
 	private static int size = 500;
-	private static long allTime=0;
-	private static int allCount=0;
+	private static long allTime = 0;
+	private static int allCount = 0;
+
 	private static void run1() {
-		int tc=count;
+		int tc = count;
 		while (true) {
 			try {
-				long start=System.currentTimeMillis();
+				long start = System.currentTimeMillis();
 				allCount++;
 				count++;
 				BigCalculateJob bigCalculateJob = new BigCalculateJob();
@@ -50,8 +53,7 @@ public class BigCalculateMain {
 				cb = bigCalculateJob.run(cb);
 				AppContextUtil.instance.getCBigCalculateDao().save(cb);
 				Helper.showMem();
-				if(count<ImportConfig.getInstance().getThread_num())
-				{
+				if (count < ImportConfig.getInstance().getThread_num()) {
 					Thread t = new Thread() {
 						public void run() {
 							try {
@@ -65,73 +67,76 @@ public class BigCalculateMain {
 					};
 					t.start();
 				}
-				System.err.println(tc+"  :use:" +(-((double)start-(double)System.currentTimeMillis())/60000d)+"分钟");
-				allTime+=System.currentTimeMillis()-start;
-				System.err.println(tc+"  :all use:" +(((float)(allTime/allCount))/60000f)+"分钟");
+				System.err.println(
+						tc + "  :use:" + (-((double) start - (double) System.currentTimeMillis()) / 60000d) + "分钟");
+				allTime += System.currentTimeMillis() - start;
+				System.err.println(tc + "  :all use:" + (((float) (allTime / allCount)) / 60000f) + "分钟");
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	public static void fun() {
-		long id = 1;
+	
 
-		CalculateNode node = new CalculateNode();
-		nodes.add(node);
-		DecimalFormat df = new DecimalFormat("0.00");
-		Random random = new Random();
-		for (int i = 0; i < 5000000; i++) {
-			if (nodes.size() >= size) {
-				node = nodes.get(random.nextInt(nodes.size()));
-			} else {
-				System.err.println("new");
-				node = new CalculateNode();
-			}
-			node = Helper.randomNode(node);
-			nodes.add(node);
-			Caluculate caluculate = new Caluculate(node, new DaySimulationJob());
-			caluculate.run(id);
-			node.setScore((float) caluculate.resultAll);
-			if (nodes.size() > size) {
-				CalculateNode nodeRemove = null;
-				for (CalculateNode n : nodes) {
-					if (nodeRemove == null) {
-						nodeRemove = n;
-					} else {
-						if (nodeRemove.getScore() > n.getScore()) {
-							nodeRemove = n;
-						}
-					}
-				}
-				if (nodeRemove != null) {
-					nodes.remove(nodeRemove);
-					nodeRemove.getTodayP().clear();
-					nodeRemove.getYestodayP().clear();
-				}
-			}
-
-			// 显示JVM总内存
-			long totalMem = Runtime.getRuntime().totalMemory();
-			System.out.println(df.format(totalMem / 1000000F) + " MB");
-			// 显示JVM尝试使用的最大内存
-			long maxMem = Runtime.getRuntime().maxMemory();
-			System.out.println(df.format(maxMem / 1000000F) + " MB");
-			// 空闲内存
-			long freeMem = Runtime.getRuntime().freeMemory();
-			System.out.println(df.format(freeMem / 1000000F) + " MB");
-			System.err.println("size:" + nodes.size());
-
-			if (i % 1000 == 0) {
-				System.gc();
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-
-	}
+	// public static void fun() {
+	// long id = 1;
+	//
+	// CalculateNode node = new CalculateNode();
+	// nodes.add(node);
+	// DecimalFormat df = new DecimalFormat("0.00");
+	// Random random = new Random();
+	// for (int i = 0; i < 5000000; i++) {
+	// if (nodes.size() >= size) {
+	// node = nodes.get(random.nextInt(nodes.size()));
+	// } else {
+	// System.err.println("new");
+	// node = new CalculateNode();
+	// }
+	// node = Helper.randomNode(node);
+	// nodes.add(node);
+	// Caluculate caluculate = new Caluculate(node, new DaySimulationJob());
+	// caluculate.run(id);
+	// node.setScore((float) caluculate.resultAll);
+	// if (nodes.size() > size) {
+	// CalculateNode nodeRemove = null;
+	// for (CalculateNode n : nodes) {
+	// if (nodeRemove == null) {
+	// nodeRemove = n;
+	// } else {
+	// if (nodeRemove.getScore() > n.getScore()) {
+	// nodeRemove = n;
+	// }
+	// }
+	// }
+	// if (nodeRemove != null) {
+	// nodes.remove(nodeRemove);
+	// nodeRemove.getTodayP().clear();
+	// nodeRemove.getYestodayP().clear();
+	// }
+	// }
+	//
+	// // 显示JVM总内存
+	// long totalMem = Runtime.getRuntime().totalMemory();
+	// System.out.println(df.format(totalMem / 1000000F) + " MB");
+	// // 显示JVM尝试使用的最大内存
+	// long maxMem = Runtime.getRuntime().maxMemory();
+	// System.out.println(df.format(maxMem / 1000000F) + " MB");
+	// // 空闲内存
+	// long freeMem = Runtime.getRuntime().freeMemory();
+	// System.out.println(df.format(freeMem / 1000000F) + " MB");
+	// System.err.println("size:" + nodes.size());
+	//
+	// if (i % 1000 == 0) {
+	// System.gc();
+	// try {
+	// Thread.sleep(1000);
+	// } catch (InterruptedException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	// }
+	// }
+	//
+	// }
 }

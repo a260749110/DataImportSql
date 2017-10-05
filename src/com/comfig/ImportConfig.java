@@ -12,7 +12,7 @@ public class ImportConfig {
 	private String dir;
 	@Value("${save_src}")
 	private String save_src;
-	
+
 	@Value("${pre_random}")
 	private Float pre_random;
 	@Value("${def_parameter}")
@@ -29,6 +29,12 @@ public class ImportConfig {
 	private Integer save_size;
 	@Value("${thread_num}")
 	private Integer thread_num;
+
+	@Value("${sample_size}")
+	private int sampleSize = 2;
+	@Value("${swap_per}")
+	private float swap_per;
+
 	public String getDir() {
 		return dir;
 	}
@@ -122,4 +128,21 @@ public class ImportConfig {
 	public void setThread_num(Integer thread_num) {
 		this.thread_num = thread_num;
 	}
+
+	public int getSampleSize() {
+		return sampleSize;
+	}
+
+	public void setSampleSize(int sampleSize) {
+		this.sampleSize = sampleSize;
+	}
+
+	public float getSwap_per() {
+		return swap_per;
+	}
+
+	public void setSwap_per(float swap_per) {
+		this.swap_per = swap_per;
+	}
+
 }
