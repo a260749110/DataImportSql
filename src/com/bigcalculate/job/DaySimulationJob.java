@@ -184,7 +184,6 @@ public class DaySimulationJob {
 				yearResult = new YearResult();
 				yearResult.year = yearNow;
 				yearResult.startMoney = moneyALL;
-				
 
 				yearBefor = yearNow;
 			}
@@ -456,7 +455,7 @@ public class DaySimulationJob {
 	}
 
 	public static class YearResult {
-		public String year;
+		public String year="0000";
 		public double startMoney;
 		public double endMoney;
 		public double dif;
@@ -480,6 +479,78 @@ public class DaySimulationJob {
 							+ ((success + unSuccess) > 0 ? (((double) success) / ((double) (success + unSuccess))) : 0))
 					.append("  ");
 			return stringBuffer.toString();
+		}
+
+		public String getYear() {
+			return year;
+		}
+
+		public void setYear(String year) {
+			this.year = year;
+		}
+
+		public double getStartMoney() {
+			return startMoney;
+		}
+
+		public void setStartMoney(double startMoney) {
+			this.startMoney = startMoney;
+		}
+
+		public double getEndMoney() {
+			return endMoney;
+		}
+
+		public void setEndMoney(double endMoney) {
+			this.endMoney = endMoney;
+		}
+
+		public double getDif() {
+			return dif;
+		}
+
+		public void setDif(double dif) {
+			this.dif = dif;
+		}
+
+		public int getCount() {
+			return count;
+		}
+
+		public void setCount(int count) {
+			this.count = count;
+		}
+
+		public int getAveUse() {
+			return aveUse;
+		}
+
+		public void setAveUse(int aveUse) {
+			this.aveUse = aveUse;
+		}
+
+		public int getAllUse() {
+			return allUse;
+		}
+
+		public void setAllUse(int allUse) {
+			this.allUse = allUse;
+		}
+
+		public int getSuccess() {
+			return success;
+		}
+
+		public void setSuccess(int success) {
+			this.success = success;
+		}
+
+		public int getUnSuccess() {
+			return unSuccess;
+		}
+
+		public void setUnSuccess(int unSuccess) {
+			this.unSuccess = unSuccess;
 		}
 	}
 }
