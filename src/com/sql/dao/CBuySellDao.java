@@ -12,6 +12,8 @@ public interface CBuySellDao extends PagingAndSortingRepository<CBuySellPo, Inte
 	@Query(value = "select * from c_buy_sell where `id`=:id and is_sell=0   order by `buy_date` desc ", nativeQuery = true)
 	public List<CBuySellPo> findById(@Param("id") long id);
 
+	
+	
 	@Query(value = "select * from c_buy_sell where is_sell=0   order by `buy_date` desc ", nativeQuery = true)
 	public List<CBuySellPo> findAll();
 

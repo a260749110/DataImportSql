@@ -63,7 +63,8 @@ public class Caluculate {
 	private int sampleSize = 2;
 
 	public void run(long id) {
-		sampleSize = ImportConfig.getInstance().getSampleSize();
+		int [] temp=ImportConfig.getInstance().getSimples();
+		sampleSize = temp[temp.length-1];
 		this.id = id;
 		init(id);
 		iteration();
@@ -78,7 +79,8 @@ public class Caluculate {
 		int count = 0;
 		List<History> histories = new ArrayList<>();
 		List<History> removeList = new ArrayList<>();
-		for (int i = Config.return_size + 1; i < datas.size(); i++) {
+		int rerunSize=ImportConfig.getInstance().getSampleSize()>Config.return_size?ImportConfig.getInstance().getSampleSize():Config.return_size;
+		for (int i = rerunSize + 1; i < datas.size(); i++) {
 			LycjssFlagData data = datas.get(i);
 			if (data.getStart() <= 0.1)
 
@@ -95,10 +97,10 @@ public class Caluculate {
 				histories.clear();
 				continue;
 			}
-
+			int [] temp=ImportConfig.getInstance().getSimples();
 			List<LycjssFlagData> sample = getCaluculateList(datas, i - 1, ImportConfig.getInstance().getSampleSize());
 			// System.err.println(JSON.toJSON(sample));
-			if (canBuy(sample, sampleSize)) {
+			if (canBuy(sample, temp)) {
 				History history = new History();
 				history.size = i;
 				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
@@ -273,7 +275,7 @@ public class Caluculate {
 	private List<LycjssFlagData> getCaluculateList(List<LycjssFlagData> datas, int end, int size) {
 		tempDatas.clear();
 
-		for (int i = 0; i < size; i++) {
+		for (int i = 0; i <= size; i++) {
 			tempDatas.add(datas.get(end - i));
 		}
 
@@ -390,6 +392,38 @@ public class Caluculate {
 		for (int i = 0; i < size; i++) {
 			LycjssFlagData data = datas.get(i);
 			tempMap = getCalculateNode().getParMapList().get(i);
+			Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
+				try {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
+					if (!tempMap.containsKey(n)) {
+						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
+					}
+					tempScore += Float.valueOf(v.toString()) * tempMap.get(n);
+				} catch (Exception e) {
+					System.err.println("name:" + n);
+					e.printStackTrace();
+				}
+
+			}, RandomConfig.class);
+		}
+		// System.err.println(tempScore);
+		if (tempScore > 0) {
+			// System.err.println(tempScore);
+			return true;
+		}
+		return false;
+
+	}
+	
+	
+	public boolean canBuy(List<LycjssFlagData> datas, int[] samples) {
+		tempScore = 0;
+
+		for (int i = 0; i < samples.length; i++) {
+			LycjssFlagData data = datas.get(samples[i]);
+			tempMap = getCalculateNode().getParMapList().get(samples[i]);
 			Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
 				try {
 					if (flter != null && !((RandomConfig) flter).enable()) {

@@ -35,10 +35,29 @@ public class ImportConfig {
 	@Value("${swap_per}")
 	private float swap_per;
 
+	
+	@Value("${calculatDays}")
+	private String calculatDays;
 	public String getDir() {
 		return dir;
 	}
+	
+	private int[] samples;
+	
+	public int [] getSimples()
+	{
+		if(samples==null)
+		{
+			String[] strs=calculatDays.split(",");
+			samples=new int[strs.length];
+			for (int i = 0; i < strs.length; i++) {
+				samples[i]=Integer.valueOf(strs[i]);
+			}
+		}
+		return samples;
+	}
 
+	
 	public void setDir(String dir) {
 		this.dir = dir;
 	}
@@ -130,6 +149,7 @@ public class ImportConfig {
 	}
 
 	public int getSampleSize() {
+		sampleSize=getSimples()[samples.length-1];
 		return sampleSize;
 	}
 
@@ -143,6 +163,14 @@ public class ImportConfig {
 
 	public void setSwap_per(float swap_per) {
 		this.swap_per = swap_per;
+	}
+
+	public String getCalculatDays() {
+		return calculatDays;
+	}
+
+	public void setCalculatDays(String calculatDays) {
+		this.calculatDays = calculatDays;
 	}
 
 }

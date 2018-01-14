@@ -445,11 +445,12 @@ public class Helper {
 				node.getParMapList().add(map);
 			}
 		}
-		for (int i = node.getParMapList().size(); i < size; i++) {
+		System.err.println( "i:"+node.getParMapList().size());
+		for (int i = node.getParMapList().size(); i <= size; i++) {
 			Map<String, Float> map = new HashMap<>();
 			node.getParMapList().add(map);
 		}
-		System.err.println(JSON.toJSONString(node));
+		System.err.println("node:"+JSON.toJSONString(node));
 		return node;
 	}
 
@@ -465,9 +466,11 @@ public class Helper {
 		System.err.println("swap !!!");
 		CalculateNode result = new CalculateNode();
 		result.setScore(0);
-		for (int i = 0; i < ImportConfig.getInstance().getSampleSize(); i++) {
-			Map<String, Float> fatherMap = father.getParMapList().get(i);
-			Map<String, Float> motherMap = mother.getParMapList().get(i);
+		int[] samples=  ImportConfig.getInstance().getSimples();
+		initNode(result, samples[samples.length-1]);
+		for (int i = 0; i <samples.length; i++) {
+			Map<String, Float> fatherMap = father.getParMapList().get(samples[i]);
+			Map<String, Float> motherMap = mother.getParMapList().get(samples[i]);
 			Map<String, Float> somMap = new HashMap<>();
 			for (String k : fatherMap.keySet()) {
 				if (random.nextFloat() < 0.5f) {
@@ -483,19 +486,23 @@ public class Helper {
 				}
 
 			}
-			result.getParMapList().add(somMap);
+			result.getParMapList().set(samples[i], somMap);
 		}
+		System.err.println("random:"+JSON.toJSONString(result));
 
 		return result;
 	}
-
+	
 	private static CalculateNode normalRandomNode(CalculateNode node) {
 		CalculateNode result = new CalculateNode();
 		int i = 0;
 		result.setScore(node.getScore());
 
-		for (int j = 0; j < ImportConfig.getInstance().getSampleSize(); j++) {
-			Map<String, Float> map = node.getParMapList().get(j);
+		int[] samples=  ImportConfig.getInstance().getSimples();
+		
+		initNode(result, samples[samples.length-1]);
+		for (int j = 0; j < samples.length; j++) {
+			Map<String, Float> map = node.getParMapList().get( samples[j]);
 			for (String k : map.keySet()) {
 				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
 					float next = nextRandom();
@@ -506,9 +513,9 @@ public class Helper {
 
 			}
 
-			result.getParMapList().add(map);
+			result.getParMapList().set(samples[i], map);
 		}
-
+		System.err.println("random:"+JSON.toJSONString(result));
 		// for (String k : node.getTodayP().keySet()) {
 		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
 		// {

@@ -14,11 +14,9 @@ public class CHistoryBuySellPK implements Serializable {
 
 	private int id;
 
-	@Temporal(TemporalType.DATE)
 	@Column(name="buy_date")
 	private java.util.Date buyDate;
 
-	@Temporal(TemporalType.DATE)
 	@Column(name="sell_date")
 	private java.util.Date sellDate;
 
