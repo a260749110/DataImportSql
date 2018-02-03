@@ -10,15 +10,15 @@ public class DataBase {
 	@RandomConfig(enable = false, calculateYestoday = false)
 	private long id;
 	@RandomConfig(enable = false, calculateYestoday = false)
-	private double start = 0;
+	private float start = 0;
 	@RandomConfig(enable = false, calculateYestoday = false)
-	private double high = 0;
+	private float high = 0;
 	@RandomConfig(enable = false, calculateYestoday = false)
-	private double low = 0;
+	private float low = 0;
 	@RandomConfig(enable = false, calculateYestoday = false)
-	private double close = 0;
+	private float close = 0;
 	@RandomConfig(enable = false, calculateYestoday = false)
-	private double deal = 0;
+	private float deal = 0;
 
 	public Date getDate() {
 		return date;
@@ -36,43 +36,43 @@ public class DataBase {
 		this.id = id;
 	}
 
-	public double getStart() {
+	public float getStart() {
 		return start;
 	}
 
-	public void setStart(double start) {
+	public void setStart(float start) {
 		this.start = start;
 	}
 
-	public double getHigh() {
+	public float getHigh() {
 		return high;
 	}
 
-	public void setHigh(double high) {
+	public void setHigh(float high) {
 		this.high = high;
 	}
 
-	public double getLow() {
+	public float getLow() {
 		return low;
 	}
 
-	public void setLow(double low) {
+	public void setLow(float low) {
 		this.low = low;
 	}
 
-	public double getClose() {
+	public float getClose() {
 		return close;
 	}
 
-	public void setClose(double close) {
+	public void setClose(float close) {
 		this.close = close;
 	}
 
-	public double getDeal() {
+	public float getDeal() {
 		return deal;
 	}
 
-	public void setDeal(double deal) {
+	public void setDeal(float deal) {
 		this.deal = deal;
 	}
 

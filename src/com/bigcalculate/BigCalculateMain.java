@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.alibaba.fastjson.JSON;
 import com.bigcalculate.cell.CalculateNode;
@@ -21,6 +23,7 @@ public class BigCalculateMain {
 
 	public static void main(String[] args) {
 		System.err.println("run thread:" + ImportConfig.getInstance().getThread_num());
+		startTime = System.currentTimeMillis();
 		Thread t = new Thread() {
 			public void run() {
 				run1();
@@ -35,14 +38,31 @@ public class BigCalculateMain {
 	private static int size = 500;
 	private static long allTime = 0;
 	private static int allCount = 0;
+	private static long startTime;
+	private static Lock lock = new ReentrantLock();
+	private static int max;
+	private static List<Integer> tList = new ArrayList<>();
 
 	private static void run1() {
 		int tc = count;
+
+		lock.lock();
+		try {
+			count++;
+		} finally {
+			lock.unlock();
+		}
+		tList.add(tc);
 		while (true) {
 			try {
 				long start = System.currentTimeMillis();
-				allCount++;
-				count++;
+				lock.lock();
+				try {
+					allCount++;
+				} finally {
+					lock.unlock();
+				}
+
 				BigCalculateJob bigCalculateJob = new BigCalculateJob();
 				bigCalculateJob.init();
 
@@ -67,6 +87,8 @@ public class BigCalculateMain {
 					};
 					t.start();
 				}
+				System.err.println("已经运行：" + ((System.currentTimeMillis() - startTime) / 1000L / 60L) + "分钟" + " 执行:"
+						+ allCount + "次 。队列：" + JSON.toJSONString(tList));
 				System.err.println(
 						tc + "  :use:" + (-((double) start - (double) System.currentTimeMillis()) / 60000d) + "分钟");
 				allTime += System.currentTimeMillis() - start;
@@ -76,8 +98,6 @@ public class BigCalculateMain {
 			}
 		}
 	}
-
-	
 
 	// public static void fun() {
 	// long id = 1;

@@ -7,40 +7,40 @@ import com.sql.domain.CDataBasePo;
 import com.util.RandomConfig;
 
 public class LycjssFlagData extends DataBase {
-	private double lycjssFlags = 0;
-	private double lycjssVma = 0;
-	private double lycjssVpr = 0;
-	private double macdDif = 0;
-	private double macdDea = 0;
-	private double macdMacd = 0;
-	private double lycjdmiFlags = 0;
-	private double lycjdmiFlagsums = 0;
-	private double lycjdmiHightsum = 0;
-	private double lycjdmiFlagsumsshow = 0;
-	private double lycjdmiVdif = 0;
-	private double lycjdmiVma = 0;
-	private double lycjdmiVpr = 0;
-	private double lykdjBuyflag = 0;
-	private double lydmiBuyflag = 0;
-	private double lydmiSellflag = 0;
-	private double lydmiPdi = 0;
-	private double lydmiAdx = 0;
-	private double lydmiAdxr = 0;
-	private double lydmiMdi = 0;
-	private double lysarfVsum = 0;
-	private double lysarfVsumdif = 0;
-	private double lysarf = 0;
-	private double lysarfVdif = 0;
-	private double ttttC = 0;
-	private double ttttSumrc = 0;
-	private double ttttZ = 0;
-	private double ttttR = 0;
-	private double ttttAll;
-	private double ttttDifrc;
-	private double ttttSumtt;
-	private double ttttFcd;;
+	private float lycjssFlags = 0;
+	private float lycjssVma = 0;
+	private float lycjssVpr = 0;
+	private float macdDif = 0;
+	private float macdDea = 0;
+	private float macdMacd = 0;
+	private float lycjdmiFlags = 0;
+	private float lycjdmiFlagsums = 0;
+	private float lycjdmiHightsum = 0;
+	private float lycjdmiFlagsumsshow = 0;
+	private float lycjdmiVdif = 0;
+	private float lycjdmiVma = 0;
+	private float lycjdmiVpr = 0;
+	private float lykdjBuyflag = 0;
+	private float lydmiBuyflag = 0;
+	private float lydmiSellflag = 0;
+	private float lydmiPdi = 0;
+	private float lydmiAdx = 0;
+	private float lydmiAdxr = 0;
+	private float lydmiMdi = 0;
+	private float lysarfVsum = 0;
+	private float lysarfVsumdif = 0;
+	private float lysarf = 0;
+	private float lysarfVdif = 0;
+	private float ttttC = 0;
+	private float ttttSumrc = 0;
+	private float ttttZ = 0;
+	private float ttttR = 0;
+	private float ttttAll;
+	private float ttttDifrc;
+	private float ttttSumtt;
+	private float ttttFcd;;
 
-	public double getLydmiPdi() {
+	public float getLydmiPdi() {
 		return lydmiPdi;
 	}
 
@@ -48,11 +48,11 @@ public class LycjssFlagData extends DataBase {
 	private Date date;
 	@RandomConfig(enable = false, calculateYestoday = false)
 	private long id;
-	private double start = 0;
-	private double high = 0;
-	private double low = 0;
-	private double close = 0;
-	private double deal = 0;
+	private float start = 0;
+	private float high = 0;
+	private float low = 0;
+	private float close = 0;
+	private float deal = 0;
 
 	public Date getDate() {
 		return date;
@@ -70,171 +70,171 @@ public class LycjssFlagData extends DataBase {
 		this.id = id;
 	}
 
-	public double getStart() {
+	public float getStart() {
 		return start;
 	}
 
-	public void setStart(double start) {
+	public void setStart(float start) {
 		this.start = start;
 	}
 
-	public double getHigh() {
+	public float getHigh() {
 		return high;
 	}
 
-	public void setHigh(double high) {
+	public void setHigh(float high) {
 		this.high = high;
 	}
 
-	public double getLow() {
+	public float getLow() {
 		return low;
 	}
 
-	public void setLow(double low) {
+	public void setLow(float low) {
 		this.low = low;
 	}
 
-	public double getClose() {
+	public float getClose() {
 		return close;
 	}
 
-	public void setClose(double close) {
+	public void setClose(float close) {
 		this.close = close;
 	}
 
-	public double getDeal() {
+	public float getDeal() {
 		return deal;
 	}
 
-	public void setDeal(double deal) {
+	public void setDeal(float deal) {
 		this.deal = deal;
 	}
 
-	public double getTtttC() {
+	public float getTtttC() {
 		return ttttC;
 	}
 
-	public void setTtttC(double ttttC) {
+	public void setTtttC(float ttttC) {
 		this.ttttC = ttttC;
 	}
 
-	public double getTtttSumrc() {
+	public float getTtttSumrc() {
 		return ttttSumrc;
 	}
 
-	public void setTtttSumrc(double ttttSumrc) {
+	public void setTtttSumrc(float ttttSumrc) {
 		this.ttttSumrc = ttttSumrc;
 	}
 
-	public double getTtttZ() {
+	public float getTtttZ() {
 		return ttttZ;
 	}
 
-	public void setTtttZ(double ttttZ) {
+	public void setTtttZ(float ttttZ) {
 		this.ttttZ = ttttZ;
 	}
 
-	public double getTtttR() {
+	public float getTtttR() {
 		return ttttR;
 	}
 
-	public void setTtttR(double ttttR) {
+	public void setTtttR(float ttttR) {
 		this.ttttR = ttttR;
 	}
 
-	public double getTtttAll() {
+	public float getTtttAll() {
 		return ttttAll;
 	}
 
-	public void setTtttAll(double ttttAll) {
+	public void setTtttAll(float ttttAll) {
 		this.ttttAll = ttttAll;
 	}
 
-	public double getTtttDifrc() {
+	public float getTtttDifrc() {
 		return ttttDifrc;
 	}
 
-	public void setTtttDifrc(double ttttDifrc) {
+	public void setTtttDifrc(float ttttDifrc) {
 		this.ttttDifrc = ttttDifrc;
 	}
 
-	public double getTtttSumtt() {
+	public float getTtttSumtt() {
 		return ttttSumtt;
 	}
 
-	public void setTtttSumtt(double ttttSumtt) {
+	public void setTtttSumtt(float ttttSumtt) {
 		this.ttttSumtt = ttttSumtt;
 	}
 
-	public double getTtttFcd() {
+	public float getTtttFcd() {
 		return ttttFcd;
 	}
 
-	public void setTtttFcd(double ttttFcd) {
+	public void setTtttFcd(float ttttFcd) {
 		this.ttttFcd = ttttFcd;
 	}
 
-	public void setLydmiPdi(double lydmiPdi) {
+	public void setLydmiPdi(float lydmiPdi) {
 		this.lydmiPdi = lydmiPdi;
 	}
 
-	public double getLydmiAdx() {
+	public float getLydmiAdx() {
 		return lydmiAdx;
 	}
 
-	public void setLydmiAdx(double lydmiAdx) {
+	public void setLydmiAdx(float lydmiAdx) {
 		this.lydmiAdx = lydmiAdx;
 	}
 
-	public double getLydmiAdxr() {
+	public float getLydmiAdxr() {
 		return lydmiAdxr;
 	}
 
-	public void setLydmiAdxr(double lydmiAdxr) {
+	public void setLydmiAdxr(float lydmiAdxr) {
 		this.lydmiAdxr = lydmiAdxr;
 	}
 
-	public double getLysarfVsum() {
+	public float getLysarfVsum() {
 		return lysarfVsum;
 	}
 
-	public void setLysarfVsum(double lysarfVsum) {
+	public void setLysarfVsum(float lysarfVsum) {
 		this.lysarfVsum = lysarfVsum;
 	}
 
-	public double getLysarfVsumdif() {
+	public float getLysarfVsumdif() {
 		return lysarfVsumdif;
 	}
 
-	public void setLysarfVsumdif(double lysarfVsumdif) {
+	public void setLysarfVsumdif(float lysarfVsumdif) {
 		this.lysarfVsumdif = lysarfVsumdif;
 	}
 
-	public double getLysarf() {
+	public float getLysarf() {
 		return lysarf;
 	}
 
-	public void setLysarf(double lysarf) {
+	public void setLysarf(float lysarf) {
 		this.lysarf = lysarf;
 	}
 
-	public double getLysarfVdif() {
+	public float getLysarfVdif() {
 		return lysarfVdif;
 	}
 
-	public void setLysarfVdif(double lysarfVdif) {
+	public void setLysarfVdif(float lysarfVdif) {
 		this.lysarfVdif = lysarfVdif;
 	}
 
-	public double getLycjssFlags() {
+	public float getLycjssFlags() {
 		return lycjssFlags;
 	}
 
-	public void setLycjssFlags(double lycjssFlags) {
+	public void setLycjssFlags(float lycjssFlags) {
 		this.lycjssFlags = lycjssFlags;
 	}
 
-	public double getLycjssVma() {
+	public float getLycjssVma() {
 		return lycjssVma;
 	}
 
@@ -245,127 +245,127 @@ public class LycjssFlagData extends DataBase {
 		return data;
 	}
 
-	public void setLycjssVma(double lycjssVma) {
+	public void setLycjssVma(float lycjssVma) {
 		this.lycjssVma = lycjssVma;
 	}
 
-	public double getLycjssVpr() {
+	public float getLycjssVpr() {
 		return lycjssVpr;
 	}
 
-	public void setLycjssVpr(double lycjssVpr) {
+	public void setLycjssVpr(float lycjssVpr) {
 		this.lycjssVpr = lycjssVpr;
 	}
 
-	public double getMacdDif() {
+	public float getMacdDif() {
 		return macdDif;
 	}
 
-	public void setMacdDif(double macdDif) {
+	public void setMacdDif(float macdDif) {
 		this.macdDif = macdDif;
 	}
 
-	public double getMacdDea() {
+	public float getMacdDea() {
 		return macdDea;
 	}
 
-	public void setMacdDea(double macdDea) {
+	public void setMacdDea(float macdDea) {
 		this.macdDea = macdDea;
 	}
 
-	public double getMacdMacd() {
+	public float getMacdMacd() {
 		return macdMacd;
 	}
 
-	public void setMacdMacd(double macdMacd) {
+	public void setMacdMacd(float macdMacd) {
 		this.macdMacd = macdMacd;
 	}
 
-	public double getLycjdmiFlags() {
+	public float getLycjdmiFlags() {
 		return lycjdmiFlags;
 	}
 
-	public void setLycjdmiFlags(double lycjdmiFlags) {
+	public void setLycjdmiFlags(float lycjdmiFlags) {
 		this.lycjdmiFlags = lycjdmiFlags;
 	}
 
-	public double getLycjdmiFlagsums() {
+	public float getLycjdmiFlagsums() {
 		return lycjdmiFlagsums;
 	}
 
-	public void setLycjdmiFlagsums(double lycjdmiFlagsums) {
+	public void setLycjdmiFlagsums(float lycjdmiFlagsums) {
 		this.lycjdmiFlagsums = lycjdmiFlagsums;
 	}
 
-	public double getLycjdmiVpr() {
+	public float getLycjdmiVpr() {
 		return lycjdmiVpr;
 	}
 
-	public void setLycjdmiVpr(double lycjdmiVpr) {
+	public void setLycjdmiVpr(float lycjdmiVpr) {
 		this.lycjdmiVpr = lycjdmiVpr;
 	}
 
-	public double getLycjdmiHightsum() {
+	public float getLycjdmiHightsum() {
 		return lycjdmiHightsum;
 	}
 
-	public void setLycjdmiHightsum(double lycjdmiHightsum) {
+	public void setLycjdmiHightsum(float lycjdmiHightsum) {
 		this.lycjdmiHightsum = lycjdmiHightsum;
 	}
 
-	public double getLycjdmiVma() {
+	public float getLycjdmiVma() {
 		return lycjdmiVma;
 	}
 
-	public void setLycjdmiVma(double lycjdmiVma) {
+	public void setLycjdmiVma(float lycjdmiVma) {
 		this.lycjdmiVma = lycjdmiVma;
 	}
 
-	public double getLycjdmiVdif() {
+	public float getLycjdmiVdif() {
 		return lycjdmiVdif;
 	}
 
-	public void setLycjdmiVdif(double lycjdmiVdif) {
+	public void setLycjdmiVdif(float lycjdmiVdif) {
 		this.lycjdmiVdif = lycjdmiVdif;
 	}
 
-	public double getLykdjBuyflag() {
+	public float getLykdjBuyflag() {
 		return lykdjBuyflag;
 	}
 
-	public void setLykdjBuyflag(double lykdjBuyflag) {
+	public void setLykdjBuyflag(float lykdjBuyflag) {
 		this.lykdjBuyflag = lykdjBuyflag;
 	}
 
-	public double getLydmiBuyflag() {
+	public float getLydmiBuyflag() {
 		return lydmiBuyflag;
 	}
 
-	public void setLydmiBuyflag(double lydmiBuyflag) {
+	public void setLydmiBuyflag(float lydmiBuyflag) {
 		this.lydmiBuyflag = lydmiBuyflag;
 	}
 
-	public double getLydmiMdi() {
+	public float getLydmiMdi() {
 		return lydmiMdi;
 	}
 
-	public void setLydmiMdi(double lydmiMdi) {
+	public void setLydmiMdi(float lydmiMdi) {
 		this.lydmiMdi = lydmiMdi;
 	}
 
-	public double getLydmiSellflag() {
+	public float getLydmiSellflag() {
 		return lydmiSellflag;
 	}
 
-	public void setLydmiSellflag(double lydmiSellflag) {
+	public void setLydmiSellflag(float lydmiSellflag) {
 		this.lydmiSellflag = lydmiSellflag;
 	}
 
-	public double getLycjdmiFlagsumsshow() {
+	public float getLycjdmiFlagsumsshow() {
 		return lycjdmiFlagsumsshow;
 	}
 
-	public void setLycjdmiFlagsumsshow(double lycjdmiFlagsumsshow) {
+	public void setLycjdmiFlagsumsshow(float lycjdmiFlagsumsshow) {
 		this.lycjdmiFlagsumsshow = lycjdmiFlagsumsshow;
 	}
 

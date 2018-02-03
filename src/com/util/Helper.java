@@ -445,12 +445,12 @@ public class Helper {
 				node.getParMapList().add(map);
 			}
 		}
-		System.err.println( "i:"+node.getParMapList().size());
+		//System.err.println( "i:"+node.getParMapList().size());
 		for (int i = node.getParMapList().size(); i <= size; i++) {
 			Map<String, Float> map = new HashMap<>();
 			node.getParMapList().add(map);
 		}
-		System.err.println("node:"+JSON.toJSONString(node));
+	//	System.err.println("node:"+JSON.toJSONString(node));
 		return node;
 	}
 
@@ -488,7 +488,7 @@ public class Helper {
 			}
 			result.getParMapList().set(samples[i], somMap);
 		}
-		System.err.println("random:"+JSON.toJSONString(result));
+		//System.err.println("random:"+JSON.toJSONString(result));
 
 		return result;
 	}
@@ -515,7 +515,7 @@ public class Helper {
 
 			result.getParMapList().set(samples[i], map);
 		}
-		System.err.println("random:"+JSON.toJSONString(result));
+	//	System.err.println("random:"+JSON.toJSONString(result));
 		// for (String k : node.getTodayP().keySet()) {
 		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
 		// {

@@ -73,7 +73,7 @@ public class SandboxSell {
 
 			if (i == datas.size() - 1) {
 				po.setLastDate(data.getDate());
-				po.setLastMoney(data.getClose());
+				po.setLastMoney((double) data.getClose());
 				po.setLastDif(dif);
 				AppContextUtil.instance.getCBuySellDao().save(po);
 				if ((po.getBuyMoney() * (1 + Config.win_per) < data.getClose() * 1.101)
