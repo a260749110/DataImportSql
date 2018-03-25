@@ -30,34 +30,47 @@ public class ImportConfig {
 	@Value("${thread_num}")
 	private Integer thread_num;
 
+	@Value("${gaussian_per:0.5}")
+	private Float gaussianPer;
+
+	@Value("${gaussian_mul:2}")
+	private Float gaussianMul;
+
 	@Value("${sample_size}")
 	private int sampleSize = 2;
 	@Value("${swap_per}")
 	private float swap_per;
 
-	
+	@Value("${mul_per:0.3}")
+	private float mulPer;
+	@Value("${mul_step:0.2}")
+	private float mulStep;
+
+	@Value("${cpu_use:2}")
+	private int cpuUse;
+	@Value("${pow_mi:2}")
+	private float powMi;
+
 	@Value("${calculatDays}")
 	private String calculatDays;
+
 	public String getDir() {
 		return dir;
 	}
-	
+
 	private int[] samples;
-	
-	public int [] getSimples()
-	{
-		if(samples==null)
-		{
-			String[] strs=calculatDays.split(",");
-			samples=new int[strs.length];
+
+	public int[] getSimples() {
+		if (samples == null) {
+			String[] strs = calculatDays.split(",");
+			samples = new int[strs.length];
 			for (int i = 0; i < strs.length; i++) {
-				samples[i]=Integer.valueOf(strs[i]);
+				samples[i] = Integer.valueOf(strs[i]);
 			}
 		}
 		return samples;
 	}
 
-	
 	public void setDir(String dir) {
 		this.dir = dir;
 	}
@@ -149,7 +162,7 @@ public class ImportConfig {
 	}
 
 	public int getSampleSize() {
-		sampleSize=getSimples()[samples.length-1];
+		sampleSize = getSimples()[samples.length - 1];
 		return sampleSize;
 	}
 
@@ -171,6 +184,54 @@ public class ImportConfig {
 
 	public void setCalculatDays(String calculatDays) {
 		this.calculatDays = calculatDays;
+	}
+
+	public int getCpuUse() {
+		return cpuUse;
+	}
+
+	public void setCpuUse(int cpuUse) {
+		this.cpuUse = cpuUse;
+	}
+
+	public Float getGaussianPer() {
+		return gaussianPer;
+	}
+
+	public void setGaussianPer(Float gaussianPer) {
+		this.gaussianPer = gaussianPer;
+	}
+
+	public Float getGaussianMul() {
+		return gaussianMul;
+	}
+
+	public void setGaussianMul(Float gaussianMul) {
+		this.gaussianMul = gaussianMul;
+	}
+
+	public float getPowMi() {
+		return powMi;
+	}
+
+	public void setPowMi(float powMi) {
+		this.powMi = powMi;
+	}
+
+	public float getMulPer() {
+		return mulPer;
+	}
+
+	public void setMulPer(float mulPer) {
+		this.mulPer = mulPer;
+	}
+
+	public float getMulStep() {
+		return mulStep;
+	}
+
+	public void setMulStep(float mulStep) {
+		this.mulStep = mulStep;
 	}
 
 }

@@ -2,9 +2,7 @@ package com.bigcalculate.job;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import com.alibaba.fastjson.JSONArray;
@@ -16,6 +14,7 @@ import com.sql.dao.CDataBaseDao;
 import com.sql.domain.CBigCalculatePo;
 import com.util.AppContextUtil;
 import com.util.Helper;
+import com.util.ThreadPoolArrayList;
 
 public class BigCalculateJob {
 	private static List<Long> allIds;
@@ -25,6 +24,8 @@ public class BigCalculateJob {
 			allIds = loadIds();
 
 	}
+
+	CalculateNode node;
 
 	public CBigCalculatePo run(CBigCalculatePo calculate) {
 		List<CalculateNode> nodes = null;
@@ -41,7 +42,7 @@ public class BigCalculateJob {
 		}
 		DaySimulationJob dj = new DaySimulationJob();
 
-		CalculateNode node = new CalculateNode();
+		node = new CalculateNode();
 
 		Random random = new Random();
 		if (nodes.size() >= ImportConfig.getInstance().getSave_size()) {
@@ -54,12 +55,17 @@ public class BigCalculateJob {
 		Helper.initNode(node, ImportConfig.getInstance().getSampleSize());
 
 		node = Helper.randomNode(node);
-		float score = 0;
-		for (long id : allIds) {
+
+		allIds.forEach(id -> {
 			Caluculate caluculate = new Caluculate(node, dj);
 			caluculate.run(id);
-			score += caluculate.resultAll;
-		}
+		});
+		System.err.println("run End");
+		// for (long id : allIds) {
+		// Caluculate caluculate = new Caluculate(node, dj);
+		// caluculate.run(id);
+		// score += caluculate.resultAll;
+		// }
 		try {
 			ConfigAndReesult rs = dj.toSql();
 			int i = 0;
@@ -80,22 +86,41 @@ public class BigCalculateJob {
 		nodes.add(node);
 		CalculateNode nodeRemove = null;
 		CalculateNode best = null;
+		nodes.sort((a, b) -> {
+			return a.getScore() > b.getScore() ? -1 : a.getScore() == b.getScore() ? 0 : 1;
+		});
 		for (CalculateNode n : nodes) {
 			if (nodeRemove == null) {
 				nodeRemove = n;
 			} else {
-				if (nodeRemove.getsScore() > n.getsScore()) {
+				if (nodeRemove.getScore() > n.getScore()) {
 					nodeRemove = n;
 				}
 			}
 			if (best == null) {
 				best = n;
 			} else {
-				if (best.getsScore() < n.getsScore()) {
+				if (best.getScore() < n.getScore()) {
 					best = n;
 				}
 			}
 		}
+		// for (CalculateNode n : nodes) {
+		// if (nodeRemove == null) {
+		// nodeRemove = n;
+		// } else {
+		// if (nodeRemove.getsScore() > n.getsScore()) {
+		// nodeRemove = n;
+		// }
+		// }
+		// if (best == null) {
+		// best = n;
+		// } else {
+		// if (best.getsScore() < n.getsScore()) {
+		// best = n;
+		// }
+		// }
+		// }
 		if (nodes.size() > ImportConfig.getInstance().getSave_size()) {
 			if (nodeRemove != null) {
 				nodes.remove(nodeRemove);
@@ -146,7 +171,7 @@ public class BigCalculateJob {
 	}
 
 	private List<Long> loadIds() {
-		List<Long> list = new ArrayList<>();
+		List<Long> list = new ThreadPoolArrayList<>(ImportConfig.getInstance().getCpuUse());
 		CDataBaseDao dao = AppContextUtil.getContext().getBean(CDataBaseDao.class);
 		List<Long> ids = dao.getAllId();
 		for (int i = 0; i < ids.size(); i++) {

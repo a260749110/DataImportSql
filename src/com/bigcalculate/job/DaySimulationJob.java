@@ -52,7 +52,7 @@ public class DaySimulationJob {
 
 	}
 
-	public void addHistory(History history) {
+	public synchronized void addHistory(History history) {
 		historyList.add(history);
 
 	}
@@ -80,53 +80,54 @@ public class DaySimulationJob {
 		double success = 0;
 		double unsuccess = 0;
 		double nowSize = startM;
-		List<CHistoryInOutPo> poList = new ArrayList<>();
-		for (History history : historyList) {
-			CHistoryInOutPo spo = historyMaps.get(history.getStart());
-			CHistoryInOutPo epo = historyMaps.get(history.getEnd());
-			double winLost = 0;
-			if (historyWinloseMap.containsKey(history.getStart())) {
-				winLost = historyWinloseMap.get(history.getStart());
-
-			}
-			winLost += history.getDif();
-			historyWinloseMap.put(history.getStart(), winLost);
-			if (spo == null) {
-				spo = new CHistoryInOutPo();
-				spo.setMarkDate(dateHelper.dateFormat.parse(history.getStart()));
-				historyMaps.put(history.getStart(), spo);
-				poList.add(spo);
-			}
-			if (epo == null) {
-				epo = new CHistoryInOutPo();
-				epo.setMarkDate(dateHelper.dateFormat.parse(history.getEnd()));
-				historyMaps.put(history.getEnd(), epo);
-				poList.add(epo);
-
-			}
-			spo.setMoneyOut(spo.getMoneyOut() - 1);
-			epo.setMoneyInAll(epo.getMoneyInAll() + 1);
-			epo.setMoneyIn(epo.getMoneyIn() + history.getDif() + 1);
-
-		}
-
-		poList.sort(new Comparator<CHistoryInOutPo>() {
-
-			@Override
-			public int compare(CHistoryInOutPo o1, CHistoryInOutPo o2) {
-				// TODO Auto-generated method stub
-				return o1.getMarkDate().before(o2.getMarkDate()) ? -1 : 1;
-			}
-		});
-		double allCount = 0;
-		double outCount = 0;
-		for (CHistoryInOutPo po : poList) {
-			allCount += po.getMoneyIn() + po.getMoneyOut();
-			po.setMoneyAll(allCount);
-			outCount += po.getMoneyOut() + po.getMoneyInAll();
-			po.setMoneyOutAll(outCount);
-		}
-
+//		{
+//			List<CHistoryInOutPo> poList = new ArrayList<>();
+//			for (History history : historyList) {
+//				CHistoryInOutPo spo = historyMaps.get(history.getStart());
+//				CHistoryInOutPo epo = historyMaps.get(history.getEnd());
+//				double winLost = 0;
+//				if (historyWinloseMap.containsKey(history.getStart())) {
+//					winLost = historyWinloseMap.get(history.getStart());
+//
+//				}
+//				winLost += history.getDif();
+//				historyWinloseMap.put(history.getStart(), winLost);
+//				if (spo == null) {
+//					spo = new CHistoryInOutPo();
+//					spo.setMarkDate(dateHelper.dateFormat.parse(history.getStart()));
+//					historyMaps.put(history.getStart(), spo);
+//					poList.add(spo);
+//				}
+//				if (epo == null) {
+//					epo = new CHistoryInOutPo();
+//					epo.setMarkDate(dateHelper.dateFormat.parse(history.getEnd()));
+//					historyMaps.put(history.getEnd(), epo);
+//					poList.add(epo);
+//
+//				}
+//				spo.setMoneyOut(spo.getMoneyOut() - 1);
+//				epo.setMoneyInAll(epo.getMoneyInAll() + 1);
+//				epo.setMoneyIn(epo.getMoneyIn() + history.getDif() + 1);
+//
+//			}
+//
+//			poList.sort(new Comparator<CHistoryInOutPo>() {
+//
+//				@Override
+//				public int compare(CHistoryInOutPo o1, CHistoryInOutPo o2) {
+//					// TODO Auto-generated method stub
+//					return o1.getMarkDate().before(o2.getMarkDate()) ? -1 : 1;
+//				}
+//			});
+//			double allCount = 0;
+//			double outCount = 0;
+//			for (CHistoryInOutPo po : poList) {
+//				allCount += po.getMoneyIn() + po.getMoneyOut();
+//				po.setMoneyAll(allCount);
+//				outCount += po.getMoneyOut() + po.getMoneyInAll();
+//				po.setMoneyOutAll(outCount);
+//			}
+//		}
 		historyList.sort(new Comparator<History>() {
 
 			@Override
@@ -239,22 +240,23 @@ public class DaySimulationJob {
 					nHistory.buy = rate;
 					buyList.add(bh);
 					historybuyList.add(nHistory);
-					printErr("B " + bh.getId() + ":" + (surplusMoney + historybuyList.size()) + "   "
-							+ historybuyList.size() + "  score" + nHistory.history.getScore() + " rate:" + rate
-							+ "  date:" + nHistory.history.getStart() + "  ");
+//					printErr("B " + bh.getId() + ":" + (surplusMoney + historybuyList.size()) + "   "
+//							+ historybuyList.size() + "  score" + nHistory.history.getScore() + " rate:" + rate
+//							+ "  date:" + nHistory.history.getStart() + "  ");
 				}
 			}
 			tempBuyList.clear();
 			for (NewHistory historyBuy : historybuyList) {
 				Date end = dateHelper.dateFormat.parse(historyBuy.history.getEnd());
+				Date start = dateHelper.dateFormat.parse(historyBuy.history.getStart());
 				if (now.compareTo(end) >= 0 || (i == historyList.size() - 1)) {
 					surplusMoney += (historyBuy.history.getDif() + 1d) * historyBuy.buy;
 					yearResult.count++;
 					moneyALL += (historyBuy.history.getDif() + 1d) * historyBuy.buy - historyBuy.buy;
 					removeList.add(historyBuy);
 
-					yearResult.allUse += (int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					yearResult.allUse += (int) ((end.getTime()
+							- start.getTime())
 							/ (3600l * 1000l * 24l));
 					if (historyBuy.history.getDif() > 0) {
 						yearResult.success += 1;
@@ -268,21 +270,21 @@ public class DaySimulationJob {
 					CHistoryBuySellPK hbsPk = new CHistoryBuySellPK();
 
 					hbsPk.setId((int) historyBuy.history.getId());
-					hbsPk.setBuyDate(dateHelper.dateFormat.parse(historyBuy.history.getStart()));
-					hbsPk.setSellDate(dateHelper.dateFormat.parse(historyBuy.history.getEnd()));
+					hbsPk.setBuyDate(start);
+					hbsPk.setSellDate(end);
 					hbsPo.setId(hbsPk);
 					hbsPo.setBuyMoney(historyBuy.history.getStartMoney());
 					hbsPo.setSellMoney(historyBuy.history.getEndMoney());
 					hbsPo.setDif(historyBuy.history.getDif());
 					hbsPo.setRate(historyBuy.buy);
-					hbsPo.setUserDay((int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					hbsPo.setUserDay((int) ((hbsPk.getSellDate().getTime()
+							- hbsPk.getBuyDate().getTime())
 							/ (3600l * 1000l * 24l)));
 					if (saveHistoryFlag) {
 						AppContextUtil.instance.getCHistoryBuySellDao().save(hbsPo);
 					}
-					printErr("S  " + historyBuy.history.getId() + ":" + surplusMoney + "   rate:" + rate + "  "
-							+ historyBuy.history.getDif());
+//					printErr("S  " + historyBuy.history.getId() + ":" + surplusMoney + "   rate:" + rate + "  "
+//							+ historyBuy.history.getDif());
 				}
 			}
 			// if (initMoney + historybuyList.size() > 25) {
@@ -305,22 +307,22 @@ public class DaySimulationJob {
 		refreshYearWin(yearBefor);
 
 		System.err.println("end:" + surplusMoney);
-		List<WLD> wldL = new ArrayList<>();
-		for (String str : historyWinloseMap.keySet()) {
-			WLD wld = new WLD();
-			wld.date = str;
-			wld.result = historyWinloseMap.get(str);
-			wldL.add(wld);
-		}
-
-		wldL.sort((a, b) -> {
-			try {
-				return dateHelper.dateFormat.parse(a.date).compareTo(dateHelper.dateFormat.parse(b.date));
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-			return 0;
-		});
+//		List<WLD> wldL = new ArrayList<>();
+//		for (String str : historyWinloseMap.keySet()) {
+//			WLD wld = new WLD();
+//			wld.date = str;
+//			wld.result = historyWinloseMap.get(str);
+//			wldL.add(wld);
+//		}
+//
+//		wldL.sort((a, b) -> {
+//			try {
+//				return dateHelper.dateFormat.parse(a.date).compareTo(dateHelper.dateFormat.parse(b.date));
+//			} catch (Exception e) {
+//				// TODO: handle exception
+//			}
+//			return 0;
+//		});
 
 		// for (WLD w:wldL) {
 		// System.out.println( w.date+","+w.result);
@@ -344,9 +346,9 @@ public class DaySimulationJob {
 			allDif += dDif;
 			if (h.takeFlag == true)
 				take++;
-			printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" + df.format(h.getStartMoney()) + " ,卖出时间:"
-					+ h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" + df.format(h.getDif() * 100) + "%"
-					+ " 耗时：" + dDif + "天      score:" + h.getScore());
+//			printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" + df.format(h.getStartMoney()) + " ,卖出时间:"
+//					+ h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" + df.format(h.getDif() * 100) + "%"
+//					+ " 耗时：" + dDif + "天      score:" + h.getScore());
 		}
 		if (buyList.size() == 0) {
 			allDif = 0;
@@ -455,7 +457,7 @@ public class DaySimulationJob {
 	}
 
 	public static class YearResult {
-		public String year="0000";
+		public String year = "0000";
 		public double startMoney;
 		public double endMoney;
 		public double dif;

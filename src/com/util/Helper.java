@@ -393,7 +393,7 @@ public class Helper {
 	}
 
 	public static CalculateNode randomNode(CalculateNode node) {
-
+		float swap_per = random.nextFloat();
 		if (random.nextFloat() >= ImportConfig.getInstance().getSwap_per()) {
 			return normalRandomNode(node);
 		}
@@ -445,12 +445,16 @@ public class Helper {
 				node.getParMapList().add(map);
 			}
 		}
-		//System.err.println( "i:"+node.getParMapList().size());
+		// System.err.println( "i:"+node.getParMapList().size());
 		for (int i = node.getParMapList().size(); i <= size; i++) {
 			Map<String, Float> map = new HashMap<>();
 			node.getParMapList().add(map);
 		}
-	//	System.err.println("node:"+JSON.toJSONString(node));
+		for (int i = node.getPar2MapList().size(); i <= size; i++) {
+			Map<String, Float> map = new HashMap<>();
+			node.getPar2MapList().add(map);
+		}
+		// System.err.println("node:"+JSON.toJSONString(node));
 		return node;
 	}
 
@@ -466,11 +470,56 @@ public class Helper {
 		System.err.println("swap !!!");
 		CalculateNode result = new CalculateNode();
 		result.setScore(0);
-		int[] samples=  ImportConfig.getInstance().getSimples();
-		initNode(result, samples[samples.length-1]);
-		for (int i = 0; i <samples.length; i++) {
-			Map<String, Float> fatherMap = father.getParMapList().get(samples[i]);
-			Map<String, Float> motherMap = mother.getParMapList().get(samples[i]);
+		int[] samples = ImportConfig.getInstance().getSimples();
+		initNode(result, samples[samples.length - 1]);
+		for (int i = 0; i < samples.length; i++) {
+			{
+				Map<String, Float> fatherMap = father.getParMapList().get(samples[i]);
+				Map<String, Float> motherMap = mother.getParMapList().get(samples[i]);
+				Map<String, Float> somMap = new HashMap<>();
+				for (String k : fatherMap.keySet()) {
+					if (random.nextFloat() < 0.5f) {
+
+						somMap.put(k, fatherMap.get(k));
+
+					} else {
+						if (motherMap.containsKey(k)) {
+							somMap.put(k, motherMap.get(k));
+						} else {
+							somMap.put(k, 0f);
+						}
+					}
+
+				}
+				result.getParMapList().set(samples[i], somMap);
+			}
+			{
+				Map<String, Float> fatherMap = father.getPar2MapList().get(samples[i]);
+				Map<String, Float> motherMap = mother.getPar2MapList().get(samples[i]);
+				Map<String, Float> somMap = new HashMap<>();
+				for (String k : fatherMap.keySet()) {
+					if (random.nextFloat() < 0.5f) {
+
+						somMap.put(k, fatherMap.get(k));
+
+					} else {
+						if (motherMap.containsKey(k)) {
+							somMap.put(k, motherMap.get(k));
+						} else {
+							somMap.put(k, 0f);
+						}
+					}
+
+				}
+				result.getPar2MapList().set(samples[i], somMap);
+			}
+
+			// System.err.println("random:"+JSON.toJSONString(result));
+		}
+
+		{
+			Map<String, Float> fatherMap = father.getPara();
+			Map<String, Float> motherMap = mother.getPara();
 			Map<String, Float> somMap = new HashMap<>();
 			for (String k : fatherMap.keySet()) {
 				if (random.nextFloat() < 0.5f) {
@@ -486,36 +535,100 @@ public class Helper {
 				}
 
 			}
-			result.getParMapList().set(samples[i], somMap);
+			result.setPara(somMap);
 		}
-		//System.err.println("random:"+JSON.toJSONString(result));
 
+		{
+			Map<String, Float> fatherMap = father.getParb();
+			Map<String, Float> motherMap = mother.getParb();
+			Map<String, Float> somMap = new HashMap<>();
+			for (String k : fatherMap.keySet()) {
+				if (random.nextFloat() < 0.5f) {
+
+					somMap.put(k, fatherMap.get(k));
+
+				} else {
+					if (motherMap.containsKey(k)) {
+						somMap.put(k, motherMap.get(k));
+					} else {
+						somMap.put(k, 0f);
+					}
+				}
+
+			}
+			result.setParb(somMap);
+		}
 		return result;
 	}
-	
-	private static CalculateNode normalRandomNode(CalculateNode node) {
-		CalculateNode result = new CalculateNode();
-		int i = 0;
-		result.setScore(node.getScore());
 
-		int[] samples=  ImportConfig.getInstance().getSimples();
-		
-		initNode(result, samples[samples.length-1]);
+	private static CalculateNode normalRandomNode(CalculateNode node) {
+		System.err.println("nomal raandom");
+		CalculateNode result = new CalculateNode();
+		// int i = 0;
+		result.setScore(node.getScore());
+		result.setsScore(node.getsScore());
+		int[] samples = ImportConfig.getInstance().getSimples();
+
+		initNode(result, samples[samples.length - 1]);
 		for (int j = 0; j < samples.length; j++) {
-			Map<String, Float> map = node.getParMapList().get( samples[j]);
+			{
+				Map<String, Float> map = node.getParMapList().get(samples[j]);
+				for (String k : map.keySet()) {
+					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+						float next = nextRandom(map.get(k));
+						map.put(k, next);
+					} else {
+						map.put(k, map.get(k));
+					}
+
+				}
+
+				result.getParMapList().set(samples[j], map);
+			}
+			{
+				Map<String, Float> map = node.getPar2MapList().get(samples[j]);
+				for (String k : map.keySet()) {
+					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+						float next = nextRandom(map.get(k));
+						map.put(k, next);
+					} else {
+						map.put(k, map.get(k));
+					}
+
+				}
+
+				result.getPar2MapList().set(samples[j], map);
+			}
+			// System.err.println("I:"+ samples[j]);
+			// System.err.println("rr:"+JSON.toJSONString(result));
+		}
+		{
+			Map<String, Float> map = node.getPara();
 			for (String k : map.keySet()) {
 				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-					float next = nextRandom();
+					float next = nextRandom(map.get(k));
 					map.put(k, next);
 				} else {
 					map.put(k, map.get(k));
 				}
 
 			}
-
-			result.getParMapList().set(samples[i], map);
+			result.setPara(map);
 		}
-	//	System.err.println("random:"+JSON.toJSONString(result));
+		{
+			Map<String, Float> map = node.getParb();
+			for (String k : map.keySet()) {
+				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+					float next = nextRandom(map.get(k));
+					map.put(k, next);
+				} else {
+					map.put(k, map.get(k));
+				}
+
+			}
+			result.setParb(map);
+		}
+		// System.err.println("random:"+JSON.toJSONString(result));
 		// for (String k : node.getTodayP().keySet()) {
 		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
 		// {
@@ -560,12 +673,21 @@ public class Helper {
 
 	private static Random random = new Random();
 
-	public static float nextRandom() {
-		int size = (int) ((ImportConfig.getInstance().getMax_random() - ImportConfig.getInstance().getMin_random())
-				/ ImportConfig.getInstance().getStep_random()) + 1;
-		int ran = random.nextInt(size);
-		float result = ImportConfig.getInstance().getMin_random() + ran * ImportConfig.getInstance().getStep_random();
+	public static float nextRandom(float befor) {
+		float result = 0;
+		if (random.nextFloat() < ImportConfig.getInstance().getMulPer()) {
 
+			result = befor * (1 + (random.nextFloat() - 0.5f) * 2.0f * ImportConfig.getInstance().getMulStep());
+			return result;
+		}
+		if (random.nextFloat() < ImportConfig.getInstance().getGaussianPer()) {
+
+			result = befor + (float) (random.nextGaussian() * ImportConfig.getInstance().getGaussianMul());
+		} else {
+			int size = (int) ((ImportConfig.getInstance().getMax_random()
+					- ImportConfig.getInstance().getMin_random()));
+			result = ImportConfig.getInstance().getMin_random() + random.nextFloat() * ((float) size);
+		}
 		return result;
 	}
 

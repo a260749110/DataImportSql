@@ -8,28 +8,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.bigcalculate.cell.CalculateNode;
-import com.check.EcheckType;
 import com.check.cells.AllDatas;
 import com.check.cells.History;
 import com.check.cells.LycjssFlagData;
 import com.check.cells.SaveOtherData;
 import com.check.cells.ScoreColdList;
 import com.check.cells.SuccessScore;
-import com.check.job.LycjssFlagJob;
 import com.comfig.Config;
 import com.comfig.ImportConfig;
 import com.sql.dao.CDataBaseDao;
 import com.sql.domain.CDataBasePo;
-import com.sql.domain.CDataResultPo;
-import com.sql.domain.CDataResultPoPK;
 import com.util.AppContextUtil;
 import com.util.Helper;
-import com.util.MathHelper;
-import com.util.MathHelper.IGetValue;
 import com.util.RandomConfig;
 
 public class Caluculate {
@@ -42,7 +37,7 @@ public class Caluculate {
 		allHistory = daySimulationJob;
 	}
 
-	public static Map<Long, List<LycjssFlagData>> cacheMap = new HashMap<>();
+	public static Map<Long, List<LycjssFlagData>> cacheMap = new ConcurrentHashMap<>();
 	List<LycjssFlagData> datas;
 	public double result = 1;
 	public double resultAll = 1;
@@ -63,8 +58,8 @@ public class Caluculate {
 	private int sampleSize = 2;
 
 	public void run(long id) {
-		int [] temp=ImportConfig.getInstance().getSimples();
-		sampleSize = temp[temp.length-1];
+		int[] temp = ImportConfig.getInstance().getSimples();
+		sampleSize = temp[temp.length - 1];
 		this.id = id;
 		init(id);
 		iteration();
@@ -79,7 +74,8 @@ public class Caluculate {
 		int count = 0;
 		List<History> histories = new ArrayList<>();
 		List<History> removeList = new ArrayList<>();
-		int rerunSize=ImportConfig.getInstance().getSampleSize()>Config.return_size?ImportConfig.getInstance().getSampleSize():Config.return_size;
+		int rerunSize = ImportConfig.getInstance().getSampleSize() > Config.return_size
+				? ImportConfig.getInstance().getSampleSize() : Config.return_size;
 		for (int i = rerunSize + 1; i < datas.size(); i++) {
 			LycjssFlagData data = datas.get(i);
 			if (data.getStart() <= 0.1)
@@ -92,15 +88,19 @@ public class Caluculate {
 			LycjssFlagData bbf = datas.get(i - 2);
 			double change = data.getClose() / bf.getClose();
 			if (change > 1.15 || change < 0.85) {
-//				System.err.println("erro:" + dateFormat.format(data.getDate()) + "  " + id + "   " + data.getClose()
-//						+ "   " + bf.getClose());
+				// System.err.println("erro:" +
+				// dateFormat.format(data.getDate()) + " " + id + " " +
+				// data.getClose()
+				// + " " + bf.getClose());
 				histories.clear();
 				continue;
 			}
-			int [] temp=ImportConfig.getInstance().getSimples();
-			List<LycjssFlagData> sample = getCaluculateList(datas, i - 1, ImportConfig.getInstance().getSampleSize());
+			int[] temp = ImportConfig.getInstance().getSimples();
+			// List<LycjssFlagData> sample = getCaluculateList(datas, i - 1,
+			// ImportConfig.getInstance().getSampleSize());
 			// System.err.println(JSON.toJSON(sample));
-			if (canBuy(sample, temp)) {
+			// if (canBuy(sample, temp)) {
+			if (canBuy(datas, temp, i - 1)) {
 				History history = new History();
 				history.size = i;
 				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
@@ -112,15 +112,16 @@ public class Caluculate {
 				history.bf = bf;
 				history.bbf = bbf;
 				history.index = i;
-				history.variance = MathHelper.Variance(datas, i - 1, Config.return_size,
-						new IGetValue<LycjssFlagData>() {
-
-							@Override
-							public double getValue(LycjssFlagData t) {
-								return t.getLycjdmiVdif();
-							}
-
-						});
+				// history.variance = MathHelper.Variance(datas, i - 1,
+				// Config.return_size,
+				// new IGetValue<LycjssFlagData>() {
+				//
+				// @Override
+				// public double getValue(LycjssFlagData t) {
+				// return t.getLycjdmiVdif();
+				// }
+				//
+				// });
 				allDatas.add(bf);
 				history.avgLycjdmiFlagsumsshow = allDatas.getCurrAvgLycjdmiFlagsumsshow();
 			}
@@ -392,6 +393,8 @@ public class Caluculate {
 		for (int i = 0; i < size; i++) {
 			LycjssFlagData data = datas.get(i);
 			tempMap = getCalculateNode().getParMapList().get(i);
+			Map<String, Float> temp2Map = getCalculateNode().getPar2MapList().get(i);
+
 			Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
 				try {
 					if (flter != null && !((RandomConfig) flter).enable()) {
@@ -400,6 +403,10 @@ public class Caluculate {
 					if (!tempMap.containsKey(n)) {
 						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
 					}
+					if (!temp2Map.containsKey(n)) {
+						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter() + 1);
+					}
+
 					tempScore += Float.valueOf(v.toString()) * tempMap.get(n);
 				} catch (Exception e) {
 					System.err.println("name:" + n);
@@ -416,8 +423,7 @@ public class Caluculate {
 		return false;
 
 	}
-	
-	
+
 	public boolean canBuy(List<LycjssFlagData> datas, int[] samples) {
 		tempScore = 0;
 
@@ -432,7 +438,16 @@ public class Caluculate {
 					if (!tempMap.containsKey(n)) {
 						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
 					}
-					tempScore += Float.valueOf(v.toString()) * tempMap.get(n);
+					if (v instanceof Float) {
+						tempScore += (Float) v * tempMap.get(n);
+					} else if (v instanceof Double) {
+						tempScore += (Double) v * tempMap.get(n);
+					} else if (v instanceof Integer) {
+						tempScore += (Integer) v * tempMap.get(n);
+					}
+					if (v instanceof Long) {
+						tempScore += (Long) v * tempMap.get(n);
+					}
 				} catch (Exception e) {
 					System.err.println("name:" + n);
 					e.printStackTrace();
@@ -440,6 +455,127 @@ public class Caluculate {
 
 			}, RandomConfig.class);
 		}
+		// System.err.println(tempScore);
+		if (tempScore > 0) {
+			// System.err.println(tempScore);
+			return true;
+		}
+		return false;
+
+	}
+
+	// public boolean canBuy(List<LycjssFlagData> datas, int[] samples, int
+	// start) {
+	// tempScore = 0;
+	//
+	// for (int i = 0; i < samples.length; i++) {
+	// int num = samples[i];
+	// LycjssFlagData data = datas.get(num - samples[i]);
+	// float squrNum = num > 0 ? (float) Math.pow((float)num,
+	// 1/ImportConfig.getInstance().getPowMi()) : 1;
+	// tempMap = getCalculateNode().getParMapList().get(samples[i]);
+	// Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
+	// try {
+	// if (flter != null && !((RandomConfig) flter).enable()) {
+	// return;
+	// }
+	// if (!tempMap.containsKey(n)) {
+	// tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
+	// }
+	// if (v instanceof Float) {
+	// tempScore += (Float) v * tempMap.get(n) / squrNum;
+	// } else if (v instanceof Double) {
+	// tempScore += (Double) v * tempMap.get(n) / squrNum;
+	// } else if (v instanceof Integer) {
+	// tempScore += (Integer) v * tempMap.get(n) / squrNum;
+	// }
+	// if (v instanceof Long) {
+	// tempScore += (Long) v * tempMap.get(n) / squrNum;
+	// }
+	// } catch (Exception e) {
+	// //System.err.println("name:" + n);
+	// e.printStackTrace();
+	// }
+	//
+	// }, RandomConfig.class);
+	// // System.err.println("i:"+samples[i]+":"+tempScore);
+	// }
+	// // System.err.println(tempScore);
+	// if (tempScore > 0) {
+	// // System.err.println(tempScore);
+	// return true;
+	// }
+	// return false;
+	//
+	// }
+	public boolean canBuy(List<LycjssFlagData> datas, int[] samples, int start) {
+		tempScore = 0;
+
+		LycjssFlagData temp = new LycjssFlagData();
+
+		CalculateNode node = getCalculateNode();
+		Helper.eachField(temp, LycjssFlagData.class, (f, n, v, flter) -> {
+			if (flter != null && !((RandomConfig) flter).enable()) {
+				return;
+			}
+			if (!node.getPara().containsKey(n)) {
+				node.getPara().put(n, 0f);
+			}
+			if (!node.getParb().containsKey(n)) {
+				node.getParb().put(n, 0f);
+			}
+			;
+			float preScore = node.getPara().get(n);
+			float allScore = node.getParb().get(n);
+			;
+			for (int i = 0; i < samples.length; i++) {
+				int num = samples[i];
+				LycjssFlagData data = datas.get(start - num);
+				tempMap = getCalculateNode().getParMapList().get(num);
+				Map<String, Float> temp2Map = getCalculateNode().getPar2MapList().get(num);
+				try {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
+					// System.err.println(temp2Map.get(n));
+					if (!tempMap.containsKey(n)) {
+						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
+					}
+					if (!temp2Map.containsKey(n)) {
+						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter() );
+					}
+					if (v instanceof Float) {
+						preScore += f.getFloat(data) * tempMap.get(n);
+						allScore += f.getFloat(data) * temp2Map.get(n);
+					} else if (v instanceof Double) {
+						preScore += f.getDouble(data) * tempMap.get(n);
+						allScore += f.getDouble(data) * temp2Map.get(n);
+					} else if (v instanceof Integer) {
+						preScore += f.getInt(data) * tempMap.get(n);
+						allScore += f.getDouble(data) * temp2Map.get(n);
+					}
+					if (v instanceof Long) {
+						preScore += f.getLong(data) * tempMap.get(n);
+						allScore += f.getLong(data) * temp2Map.get(n);
+					}
+				} catch (Exception e) {
+					// System.err.println("name:" + n);
+					e.printStackTrace();
+				}
+				try {
+					// System.err.println("v:" + f.get(data) + " i:" + i + " " +
+					// preScore + " all:" + allScore);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			float score = allScore != 0 ? preScore / allScore : 0;
+			tempScore += score;
+			// System.err.println("name:" + n + " " + score + " sum:" +
+			// tempScore);
+		}, RandomConfig.class);
+
 		// System.err.println(tempScore);
 		if (tempScore > 0) {
 			// System.err.println(tempScore);
