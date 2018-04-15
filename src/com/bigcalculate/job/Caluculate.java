@@ -104,7 +104,8 @@ public class Caluculate {
 				History history = new History();
 				history.size = i;
 				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
-				history.start = dateFormat.format(data.getDate());
+
+				history.setStart(data.getDate());
 				history.startMoney = buyMoney(data, bf, buyPoint);
 				histories.add(history);
 				history.setScore(tempScore);
@@ -180,13 +181,9 @@ public class Caluculate {
 					}
 					{
 						long days = 0;
-						try {
-							days = (data.getDate().getTime() - dateFormat.parse(history.getStart()).getTime())
-									/ (3600l * 1000l * 24l);
-						} catch (ParseException e) {
-							System.err.println(history.getStart());
-							e.printStackTrace();
-						}
+
+						days = (data.getDate().getTime() - history.getStartTime()) / (3600l * 1000l * 24l);
+
 						days = i - history.index;
 						if (days > Config.max_keep) {
 
@@ -219,7 +216,7 @@ public class Caluculate {
 							triCount++;
 							history.setDif(dif);
 							history.setNowWin(result);
-							history.end = dateFormat.format(data.getDate());
+							history.setEnd(data.getDate());
 							history.endMoney = history.getStartMoney() * (1 + dif);
 							removeList.add(history);
 							other.historys.add(history);
@@ -249,7 +246,7 @@ public class Caluculate {
 								history.setDif(dif);
 								history.setNowWin(result);
 								try {
-									history.end = dateFormat.format(new Date());
+									history.setEnd(new Date());
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -542,7 +539,7 @@ public class Caluculate {
 						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
 					}
 					if (!temp2Map.containsKey(n)) {
-						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter() );
+						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter());
 					}
 					if (v instanceof Float) {
 						preScore += f.getFloat(data) * tempMap.get(n);
@@ -617,7 +614,5 @@ public class Caluculate {
 	public void setCalculateNode(CalculateNode calculateNode) {
 		this.calculateNode = calculateNode;
 	}
-
-	public SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 }

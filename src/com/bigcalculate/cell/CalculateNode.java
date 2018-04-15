@@ -17,7 +17,7 @@ public class CalculateNode {
 	private Map<String, YearResult> yearInfo = new HashMap<>();
 	private float score;
 	private float sScore;
-
+	private float dscore;
 	public Map<String, Float> getTodayP() {
 		return todayP;
 	}
@@ -100,5 +100,13 @@ public class CalculateNode {
 	 */
 	public void setParb(Map<String, Float> parb) {
 		this.parb = parb;
+	}
+
+	public float getDscore() {
+		return dscore;
+	}
+
+	public void setDscore(float dscore) {
+		this.dscore = dscore;
 	}
 }

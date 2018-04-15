@@ -3,6 +3,7 @@ package com.util;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,8 @@ import com.sql.domain.CBigCalculatePo;
 import com.util.MathHelper.IGetValue;
 
 public class Helper {
+	
+	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	public static <T> T avgList(List<T> list, Class<T> clazz) {
 
 		;
@@ -567,6 +570,7 @@ public class Helper {
 		// int i = 0;
 		result.setScore(node.getScore());
 		result.setsScore(node.getsScore());
+		result.setDscore(node.getDscore());
 		int[] samples = ImportConfig.getInstance().getSimples();
 
 		initNode(result, samples[samples.length - 1]);

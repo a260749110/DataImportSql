@@ -24,7 +24,7 @@ public class AllHistory {
 	public static double INIT_MONEY = 20; /// 112 :30倍
 	public double targetSize = 20;
 	public double defMoney = INIT_MONEY;
-	public DateHelper dateHelper=new DateHelper();
+	public DateHelper dateHelper = new DateHelper();
 	/**
 	 * 剩余金钱
 	 */
@@ -83,25 +83,25 @@ public class AllHistory {
 		double nowSize = startM;
 		List<CHistoryInOutPo> poList = new ArrayList<>();
 		for (History history : historyList) {
-			CHistoryInOutPo spo = historyMaps.get(history.getStart());
-			CHistoryInOutPo epo = historyMaps.get(history.getEnd());
+			CHistoryInOutPo spo = historyMaps.get(history.getStartStr());
+			CHistoryInOutPo epo = historyMaps.get(history.getEndStr());
 			double winLost = 0;
-			if (historyWinloseMap.containsKey(history.getStart())) {
-				winLost = historyWinloseMap.get(history.getStart());
+			if (historyWinloseMap.containsKey(history.getStartStr())) {
+				winLost = historyWinloseMap.get(history.getStartStr());
 
 			}
 			winLost += history.getDif();
-			historyWinloseMap.put(history.getStart(), winLost);
+			historyWinloseMap.put(history.getStartStr(), winLost);
 			if (spo == null) {
 				spo = new CHistoryInOutPo();
-				spo.setMarkDate(dateHelper.dateFormat.parse(history.getStart()));
-				historyMaps.put(history.getStart(), spo);
+				spo.setMarkDate(dateHelper.dateFormat.parse(history.getStartStr()));
+				historyMaps.put(history.getStartStr(), spo);
 				poList.add(spo);
 			}
 			if (epo == null) {
 				epo = new CHistoryInOutPo();
-				epo.setMarkDate(dateHelper.dateFormat.parse(history.getEnd()));
-				historyMaps.put(history.getEnd(), epo);
+				epo.setMarkDate(dateHelper.dateFormat.parse(history.getEndStr()));
+				historyMaps.put(history.getEndStr(), epo);
 				poList.add(epo);
 
 			}
@@ -136,8 +136,8 @@ public class AllHistory {
 			@Override
 			public int compare(History o1, History o2) {
 				try {
-					return dateHelper.dateFormat.parse(o1.getStart())
-							.compareTo(dateHelper.dateFormat.parse(o2.getStart()));
+					return dateHelper.dateFormat.parse(o1.getStartStr())
+							.compareTo(dateHelper.dateFormat.parse(o2.getStartStr()));
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -159,7 +159,7 @@ public class AllHistory {
 			History history = historyList.get(i);
 			History historyAf = (i < historyList.size() - 1) ? historyList.get(i + 1) : null;
 
-			Date now = dateHelper.dateFormat.parse(history.getStart());
+			Date now = dateHelper.dateFormat.parse(history.getStartStr());
 
 			String yearNow = dateHelper.dateFormatYear.format(now);
 			String monthNow = dateHelper.dateFormatMM.format(now);
@@ -194,7 +194,7 @@ public class AllHistory {
 				yearBefor = yearNow;
 			}
 			boolean cbuyFlag = false;
-			if ((historyAf != null && !historyAf.getStart().equals(history.getStart())) || historyAf == null) {
+			if ((historyAf != null && !historyAf.getStart().equals(history.getStartStr())) || historyAf == null) {
 				cbuyFlag = true;
 			}
 			// if (dateBefor != null)
@@ -224,10 +224,10 @@ public class AllHistory {
 						tempBuyList.add(history);
 					}
 				}
-				// dateBefor = history.getStart();
+				// dateBefor = history.getStartStr();
 			}
 			// else {
-			// dateBefor = history.getStart();
+			// dateBefor = history.getStartStr();
 			//
 			// continue;
 			// }
@@ -254,7 +254,7 @@ public class AllHistory {
 					historybuyList.add(nHistory);
 					printErr("B " + bh.getId() + ":" + (surplusMoney + historybuyList.size()) + "   "
 							+ historybuyList.size() + "  score" + nHistory.history.getScore() + " rate:" + rate
-							+ "  date:" + nHistory.history.getStart() + "  ");
+							+ "  date:" + nHistory.history.getStartStr() + "  ");
 				}
 				// initMoney -= rate;
 				// NewHistory nHistory = new NewHistory();
@@ -264,11 +264,11 @@ public class AllHistory {
 				// historybuyList.add(nHistory);
 				// System.err.println("B:" + (initMoney + historybuyList.size())
 				// + " " + historybuyList.size() + " rate:"
-				// + rate + " date:" + nHistory.history.getStart() + " ");
+				// + rate + " date:" + nHistory.history.getStartStr() + " ");
 			}
 			tempBuyList.clear();
 			for (NewHistory historyBuy : historybuyList) {
-				Date end = dateHelper.dateFormat.parse(historyBuy.history.getEnd());
+				Date end = dateHelper.dateFormat.parse(historyBuy.history.getEndStr());
 				// System.err.println(now +" "+end);
 				if (now.compareTo(end) >= 0 || (i == historyList.size() - 1)) {
 					surplusMoney += (historyBuy.history.getDif() + 1d) * historyBuy.buy;
@@ -276,8 +276,8 @@ public class AllHistory {
 					moneyALL += (historyBuy.history.getDif() + 1d) * historyBuy.buy - historyBuy.buy;
 					removeList.add(historyBuy);
 
-					yearResult.allUse += (int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					yearResult.allUse += (int) ((dateHelper.dateFormat.parse(historyBuy.history.getEndStr()).getTime()
+							- dateHelper.dateFormat.parse(historyBuy.history.getStartStr()).getTime())
 							/ (3600l * 1000l * 24l));
 					if (historyBuy.history.getDif() > 0) {
 						yearResult.success += 1;
@@ -291,15 +291,15 @@ public class AllHistory {
 					CHistoryBuySellPK hbsPk = new CHistoryBuySellPK();
 
 					hbsPk.setId((int) historyBuy.history.getId());
-					hbsPk.setBuyDate(dateHelper.dateFormat.parse(historyBuy.history.getStart()));
-					hbsPk.setSellDate(dateHelper.dateFormat.parse(historyBuy.history.getEnd()));
+					hbsPk.setBuyDate(dateHelper.dateFormat.parse(historyBuy.history.getStartStr()));
+					hbsPk.setSellDate(dateHelper.dateFormat.parse(historyBuy.history.getEndStr()));
 					hbsPo.setId(hbsPk);
 					hbsPo.setBuyMoney(historyBuy.history.getStartMoney());
 					hbsPo.setSellMoney(historyBuy.history.getEndMoney());
 					hbsPo.setDif(historyBuy.history.getDif());
 					hbsPo.setRate(historyBuy.buy);
-					hbsPo.setUserDay((int) ((dateHelper.dateFormat.parse(historyBuy.history.getEnd()).getTime()
-							- dateHelper.dateFormat.parse(historyBuy.history.getStart()).getTime())
+					hbsPo.setUserDay((int) ((dateHelper.dateFormat.parse(historyBuy.history.getEndStr()).getTime()
+							- dateHelper.dateFormat.parse(historyBuy.history.getStartStr()).getTime())
 							/ (3600l * 1000l * 24l)));
 					if (saveHistoryFlag) {
 						AppContextUtil.instance.getCHistoryBuySellDao().save(hbsPo);
@@ -354,7 +354,7 @@ public class AllHistory {
 
 		buyList.sort((a, b) -> {
 			try {
-				return dateHelper.dateFormat.parse(a.getEnd()).compareTo(dateHelper.dateFormat.parse(b.getEnd()));
+				return dateHelper.dateFormat.parse(a.getEndStr()).compareTo(dateHelper.dateFormat.parse(b.getEndStr()));
 			} catch (Exception e) {
 				e.printStackTrace();
 				return 0;
@@ -362,14 +362,14 @@ public class AllHistory {
 		});
 		for (History h : buyList) {
 
-			long dDif = (dateHelper.dateFormat.parse(h.getEnd()).getTime()
-					- dateHelper.dateFormat.parse(h.getStart()).getTime()) / (3600l * 1000l * 24l);
+			long dDif = (dateHelper.dateFormat.parse(h.getEndStr()).getTime()
+					- dateHelper.dateFormat.parse(h.getStartStr()).getTime()) / (3600l * 1000l * 24l);
 			allDif += dDif;
 			if (h.takeFlag == true)
 				take++;
-			printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" + df.format(h.getStartMoney()) + " ,卖出时间:"
-					+ h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" + df.format(h.getDif() * 100) + "%"
-					+ " 耗时：" + dDif + "天      score:" + h.getScore());
+//			printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" + df.format(h.getStartMoney()) + " ,卖出时间:"
+//					+ h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" + df.format(h.getDif() * 100) + "%"
+//					+ " 耗时：" + dDif + "天      score:" + h.getScore());
 		}
 		allDif /= buyList.size();
 		System.err.println(

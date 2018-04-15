@@ -96,7 +96,7 @@ public class LycjssFlagJob2 extends CheckJobsBase {
 				History history = new History();
 				history.setSize(i);
 				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
-				history.setStart(dateFormat.format(data.getDate()));
+				history.setStart(data.getDate());
 				history.setStartMoney(buyMoney(data, bf, buyPoint));
 				histories.add(history);
 				history.setScore(sl.getScore());
@@ -201,14 +201,9 @@ public class LycjssFlagJob2 extends CheckJobsBase {
 					// if(!okFlag)
 					{
 						long days = 0;
-						try {
-							days = (data.getDate().getTime()
-									- LycjssFlagJob2.dateFormat.parse(history.getStart()).getTime())
-									/ (3600l * 1000l * 24l);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						
+							days = (data.getDate().getTime() - history.getStart().getTime()) / (3600l * 1000l * 24l);
+					
 						days = i - history.index;
 						// if(history.index+150<i)
 						if (days > Config.max_keep) {
@@ -245,7 +240,7 @@ public class LycjssFlagJob2 extends CheckJobsBase {
 							triCount++;
 							history.setDif(dif);
 							history.setNowWin(result);
-							history.setEnd(dateFormat.format(data.getDate()));
+							history.setEnd(data.getDate());
 							// System.err.println("S date:"+data.getDate()+"
 							// "+data.getClose());
 							history.setEndMoney(history.getStartMoney() * (1 + dif));

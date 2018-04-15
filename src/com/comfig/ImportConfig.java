@@ -45,7 +45,11 @@ public class ImportConfig {
 	private float mulPer;
 	@Value("${mul_step:0.2}")
 	private float mulStep;
-
+	/**
+	 * 随时间推移冷却系数
+	 */
+	@Value("${score_down:0.9992}")
+	private double scoreDown;
 	@Value("${cpu_use:2}")
 	private int cpuUse;
 	@Value("${pow_mi:2}")
@@ -232,6 +236,14 @@ public class ImportConfig {
 
 	public void setMulStep(float mulStep) {
 		this.mulStep = mulStep;
+	}
+
+	public double getScoreDown() {
+		return scoreDown;
+	}
+
+	public void setScoreDown(double scoreDown) {
+		this.scoreDown = scoreDown;
 	}
 
 }

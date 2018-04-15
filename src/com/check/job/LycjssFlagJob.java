@@ -93,8 +93,8 @@ public class LycjssFlagJob extends CheckJobsBase {
 			LycjssFlagData bbf = datas.get(i - 2);
 			double change = data.getClose() / bf.getClose();
 			if (change > 1.15 || change < 0.85) {
-				System.err.println("erro:" + dateFormat.format(data.getDate()) + "  " + id + "   "
-						+ data.getClose() + "   " + bf.getClose());
+				System.err.println("erro:" + dateFormat.format(data.getDate()) + "  " + id + "   " + data.getClose()
+						+ "   " + bf.getClose());
 				histories.clear();
 				continue;
 			}
@@ -105,7 +105,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 				History history = new History();
 				history.size = i;
 				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
-				history.start = dateFormat.format(data.getDate());
+				history.setStart(data.getDate());
 				history.startMoney = buyMoney(data, bf, buyPoint);
 				histories.add(history);
 				history.setScore(sl.getScore());
@@ -216,14 +216,9 @@ public class LycjssFlagJob extends CheckJobsBase {
 					// if(!okFlag)
 					{
 						long days = 0;
-						try {
-							days = (data.getDate().getTime()
-									- dateFormat.parse(history.getStart()).getTime())
-									/ (3600l * 1000l * 24l);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+
+						days = (data.getDate().getTime() - history.getStart().getTime()) / (3600l * 1000l * 24l);
+
 						days = i - history.index;
 						// if(history.index+150<i)
 						if (days > Config.max_keep) {
@@ -261,7 +256,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 							triCount++;
 							history.setDif(dif);
 							history.setNowWin(result);
-							history.end = dateFormat.format(data.getDate());
+							history.setEnd(data.getDate());
 							// System.err.println("S date:"+data.getDate()+"
 							// "+data.getClose());
 							history.endMoney = history.getStartMoney() * (1 + dif);
@@ -294,7 +289,7 @@ public class LycjssFlagJob extends CheckJobsBase {
 								history.setDif(dif);
 								history.setNowWin(result);
 								try {
-									history.end = dateFormat.format(new Date());
+									history.setEnd(new Date());
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -441,12 +436,10 @@ public class LycjssFlagJob extends CheckJobsBase {
 			return true;
 
 		}
-		
+
 		return false;
 	}
 
-	private  SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-
-
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
 
 }

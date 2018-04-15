@@ -26,6 +26,9 @@ public class CBigCalculatePo implements Serializable {
 	private float score;
 	@Column(name = "s_score")
 	private float sScore;
+	@Column(name = "dscore")
+	private float dscore;
+
 	public CBigCalculatePo() {
 	}
 
@@ -59,6 +62,14 @@ public class CBigCalculatePo implements Serializable {
 
 	public void setsScore(float sScore) {
 		this.sScore = sScore;
+	}
+
+	public float getDscore() {
+		return dscore;
+	}
+
+	public void setDscore(float dscore) {
+		this.dscore = dscore;
 	}
 
 }

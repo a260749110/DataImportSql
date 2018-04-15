@@ -79,28 +79,27 @@ public class BigCalculateJob {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		// node.setScore((float) score);
 		node.setsScore((float) dj.moneyALL);
-
+		node.setDscore((float) dj.dscore);
 		nodes = refreshNods(calculate, nodes);
 		nodes.add(node);
 		CalculateNode nodeRemove = null;
 		CalculateNode best = null;
 		nodes.sort((a, b) -> {
-			return a.getScore() > b.getScore() ? -1 : a.getScore() == b.getScore() ? 0 : 1;
+			return a.getDscore() > b.getDscore() ? -1 : a.getDscore() == b.getDscore() ? 0 : 1;
 		});
 		for (CalculateNode n : nodes) {
 			if (nodeRemove == null) {
 				nodeRemove = n;
 			} else {
-				if (nodeRemove.getScore() > n.getScore()) {
+				if (nodeRemove.getDscore() > n.getDscore()) {
 					nodeRemove = n;
 				}
 			}
 			if (best == null) {
 				best = n;
 			} else {
-				if (best.getScore() < n.getScore()) {
+				if (best.getDscore() < n.getDscore()) {
 					best = n;
 				}
 			}
@@ -129,26 +128,17 @@ public class BigCalculateJob {
 		}
 		calculate.setDataBase(JSONArray.toJSONString(nodes));
 		calculate.setScore(best.getScore());
+		calculate.setDscore(best.getDscore());
 		calculate.setsScore(best.getsScore());
 		return calculate;
 	}
 
-	public void run(CalculateNode node) {
-
-		Random random = new Random();
-		DaySimulationJob dj = new DaySimulationJob();
-		float score = 0;
-		for (long id : allIds) {
+	public void run(CalculateNode node,DaySimulationJob dj) {
+		allIds.forEach(id -> {
 			Caluculate caluculate = new Caluculate(node, dj);
 			caluculate.run(id);
-			score += caluculate.resultAll;
-		}
-		try {
-			dj.showFlag = true;
-			dj.toSql();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		});
+	
 
 	}
 
