@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -19,8 +20,9 @@ import com.sql.domain.CBigCalculatePo;
 import com.util.MathHelper.IGetValue;
 
 public class Helper {
-	
+
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
 	public static <T> T avgList(List<T> list, Class<T> clazz) {
 
 		;
@@ -415,8 +417,6 @@ public class Helper {
 					nodes = new ArrayList<>();
 				}
 
-				DaySimulationJob dj = new DaySimulationJob();
-
 				CalculateNode mother = new CalculateNode();
 
 				Random random = new Random();
@@ -434,20 +434,20 @@ public class Helper {
 
 	public static CalculateNode initNode(CalculateNode node, int size) {
 
-		if (node.getParMapList().size() == 0) {
-			if (node.getTodayP() != null) {
-				node.getParMapList().add(copyMap(node.getTodayP()));
-			} else {
-				Map<String, Float> map = new HashMap<>();
-				node.getParMapList().add(map);
-			}
-			if (node.getYestodayP() != null) {
-				node.getParMapList().add(copyMap(node.getYestodayP()));
-			} else {
-				Map<String, Float> map = new HashMap<>();
-				node.getParMapList().add(map);
-			}
-		}
+		// if (node.getParMapList().size() == 0) {
+		// if (node.getTodayP() != null) {
+		// // node.getParMapList().add(copyMap(node.getTodayP()));
+		// } else {
+		// Map<String, Float> map = new HashMap<>();
+		// node.getParMapList().add(map);
+		// }
+		// if (node.getYestodayP() != null) {
+		// node.getParMapList().add(copyMap(node.getYestodayP()));
+		// } else {
+		// Map<String, Float> map = new HashMap<>();
+		// node.getParMapList().add(map);
+		// }
+		// }
 		// System.err.println( "i:"+node.getParMapList().size());
 		for (int i = node.getParMapList().size(); i <= size; i++) {
 			Map<String, Float> map = new HashMap<>();
@@ -457,6 +457,14 @@ public class Helper {
 			Map<String, Float> map = new HashMap<>();
 			node.getPar2MapList().add(map);
 		}
+		// for (int i = node.getParPwoMapList().size(); i <= size; i++) {
+		// Map<String, Float> map = new HashMap<>();
+		// node.getParPwoMapList().add(map);
+		// }
+		// for (int i = node.getParPowAMapList().size(); i <= size; i++) {
+		// Map<String, Float> map = new HashMap<>();
+		// node.getParPowAMapList().add(map);
+		// }
 		// System.err.println("node:"+JSON.toJSONString(node));
 		return node;
 	}
@@ -561,6 +569,32 @@ public class Helper {
 			}
 			result.setParb(somMap);
 		}
+
+		{
+			Map<String, Float> fatherMap = father.getTodayP();
+			Map<String, Float> motherMap = mother.getTodayP();
+			Map<String, Float> somMap = new HashMap<>();
+			for (String k : fatherMap.keySet()) {
+				if (random.nextFloat() < 0.5f) {
+
+					somMap.put(k, fatherMap.get(k));
+
+				} else {
+					if (motherMap.containsKey(k)) {
+						somMap.put(k, motherMap.get(k));
+					} else {
+						somMap.put(k, 0f);
+					}
+				}
+
+			}
+			result.setTodayP(somMap);
+		}
+		if (random.nextFloat() < 0.5f) {
+			result.setPc(father.getPc());
+		} else {
+			result.setPc(mother.getPc());
+		}
 		return result;
 	}
 
@@ -568,6 +602,8 @@ public class Helper {
 		System.err.println("nomal raandom");
 		CalculateNode result = new CalculateNode();
 		// int i = 0;
+		HashSet<String> all=new HashSet<>();
+		HashSet<String> changeCachae=new HashSet<>();
 		result.setScore(node.getScore());
 		result.setsScore(node.getsScore());
 		result.setDscore(node.getDscore());
@@ -578,7 +614,9 @@ public class Helper {
 			{
 				Map<String, Float> map = node.getParMapList().get(samples[j]);
 				for (String k : map.keySet()) {
+					all.add(k);
 					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+						changeCachae.add(k);
 						float next = nextRandom(map.get(k));
 						map.put(k, next);
 					} else {
@@ -593,6 +631,7 @@ public class Helper {
 				Map<String, Float> map = node.getPar2MapList().get(samples[j]);
 				for (String k : map.keySet()) {
 					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+						changeCachae.add(k);
 						float next = nextRandom(map.get(k));
 						map.put(k, next);
 					} else {
@@ -603,6 +642,41 @@ public class Helper {
 
 				result.getPar2MapList().set(samples[j], map);
 			}
+
+			// {
+			// Map<String, Float> map =
+			// node.getParPowAMapList().get(samples[j]);
+			// for (String k : map.keySet()) {
+			// if (random.nextFloat() <
+			// ImportConfig.getInstance().getPre_random()) {
+			// float next = nextRandom(map.get(k));
+			// map.put(k, next);
+			// } else {
+			// map.put(k, map.get(k));
+			// }
+			//
+			// }
+			//
+			// result.getParPowAMapList().set(samples[j], map);
+			// }
+			//
+			// {
+			// Map<String, Float> map = node.getParPwoMapList().get(samples[j]);
+			// for (String k : map.keySet()) {
+			// if (random.nextFloat() <
+			// ImportConfig.getInstance().getPre_random()) {
+			// float next =
+			// nextRandom(map.get(k),(float)ImportConfig.getInstance().getPerPowMax());
+			// map.put(k, next);
+			// } else {
+			// map.put(k, map.get(k));
+			// }
+			//
+			// }
+			//
+			// result.getParPwoMapList().set(samples[j], map);
+			// }
+
 			// System.err.println("I:"+ samples[j]);
 			// System.err.println("rr:"+JSON.toJSONString(result));
 		}
@@ -610,6 +684,7 @@ public class Helper {
 			Map<String, Float> map = node.getPara();
 			for (String k : map.keySet()) {
 				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+					changeCachae.add(k);
 					float next = nextRandom(map.get(k));
 					map.put(k, next);
 				} else {
@@ -623,6 +698,7 @@ public class Helper {
 			Map<String, Float> map = node.getParb();
 			for (String k : map.keySet()) {
 				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+					changeCachae.add(k);
 					float next = nextRandom(map.get(k));
 					map.put(k, next);
 				} else {
@@ -632,6 +708,26 @@ public class Helper {
 			}
 			result.setParb(map);
 		}
+
+		{
+			Map<String, Float> map = node.getTodayP();
+			for (String k : map.keySet()) {
+				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+					changeCachae.add(k);
+					float next = nextRandom(map.get(k));
+					map.put(k, next);
+				} else {
+					map.put(k, map.get(k));
+				}
+
+			}
+			result.setTodayP(map);
+		}
+
+		if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+			node.setPc(nextRandom(node.getPc()));
+		}
+		System.err.println("all:"+all.size()+" change:"+changeCachae.size());
 		// System.err.println("random:"+JSON.toJSONString(result));
 		// for (String k : node.getTodayP().keySet()) {
 		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
@@ -693,6 +789,46 @@ public class Helper {
 			result = ImportConfig.getInstance().getMin_random() + random.nextFloat() * ((float) size);
 		}
 		return result;
+	}
+
+	/**
+	 * 0~max
+	 * 
+	 * @param befor
+	 * @param max
+	 * @return
+	 */
+	public static float nextRandom(float befor, float max) {
+		float result = 0;
+		if (random.nextFloat() < ImportConfig.getInstance().getMulPer()) {
+
+			result = (float) (random.nextFloat() * max);
+			return result;
+		}
+		if (random.nextFloat() < ImportConfig.getInstance().getGaussianPer()) {
+
+			result = befor + (float) (random.nextGaussian() * ImportConfig.getInstance().getGaussianMul());
+		} else {
+			int size = (int) ((ImportConfig.getInstance().getMax_random()
+					- ImportConfig.getInstance().getMin_random()));
+			result = ImportConfig.getInstance().getMin_random() + random.nextFloat() * ((float) size);
+		}
+		if (result < 0) {
+			result = 0;
+
+		} else if (result > max) {
+			result = max;
+		}
+		return result;
+	}
+
+	public static double pow(double v, double m) {
+
+		if (v >= 0) {
+			return Math.pow(v, m);
+		} else {
+			return -Math.pow(-v, m);
+		}
 	}
 
 }

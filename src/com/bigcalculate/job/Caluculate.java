@@ -101,54 +101,70 @@ public class Caluculate {
 			// System.err.println(JSON.toJSON(sample));
 			// if (canBuy(sample, temp)) {
 			if (canBuy(datas, temp, i - 1)) {
-				History history = new History();
-				history.size = i;
-				history.buySuccessFlag = buySuccess(data, bf, buyPoint);
-
-				history.setStart(data.getDate());
-				history.startMoney = buyMoney(data, bf, buyPoint);
-				histories.add(history);
-				history.setScore(tempScore);
-				history.now = data;
-				history.bf = bf;
-				history.bbf = bbf;
-				history.index = i;
-				// history.variance = MathHelper.Variance(datas, i - 1,
-				// Config.return_size,
-				// new IGetValue<LycjssFlagData>() {
-				//
-				// @Override
-				// public double getValue(LycjssFlagData t) {
-				// return t.getLycjdmiVdif();
-				// }
-				//
-				// });
-				allDatas.add(bf);
-				history.avgLycjdmiFlagsumsshow = allDatas.getCurrAvgLycjdmiFlagsumsshow();
+				// System.err.println("i:"+i);
+				if (data.getBuyHistory() != null) {
+					History history = data.getBuyHistory();
+					history.setScore(tempScore);
+					history.setiSize(i);
+					allHistory.addHistory(history);
+					// System.err.println("speed up!");
+				} else {
+					History history = new History();
+					history.setiSize(i);
+					history.buySuccessFlag = buySuccess(data, bf, buyPoint);
+					history.setAllSize(datas.size());
+					history.setStart(data.getDate());
+					history.startMoney = buyMoney(data, bf, buyPoint);
+					histories.add(history);
+					history.setScore(tempScore);
+					history.now = data;
+					history.bf = bf;
+					history.bbf = bbf;
+					history.index = i;
+					// history.variance = MathHelper.Variance(datas, i - 1,
+					// Config.return_size,
+					// new IGetValue<LycjssFlagData>() {
+					//
+					// @Override
+					// public double getValue(LycjssFlagData t) {
+					// return t.getLycjdmiVdif();
+					// }
+					//
+					// });
+					// allDatas.add(bf);
+					// history.avgLycjdmiFlagsumsshow =
+					// allDatas.getCurrAvgLycjdmiFlagsumsshow();
+				}
 			}
 			{
 
 				removeList.clear();
 				for (History history : histories) {
 					double difH = (data.getHigh() - history.startMoney) / history.startMoney;
-					double difL = (data.getLow() - history.startMoney) / history.startMoney;
+					// double difL = (data.getLow() - history.startMoney) /
+					// history.startMoney;
 					double difC = (data.getClose() - history.startMoney) / history.startMoney;
 					double difS = (data.getStart() - history.startMoney) / history.startMoney;
 
 					double difTS = (data.getStart() - bf.getClose()) / bf.getClose();
-					double difTL = (data.getLow() - bf.getClose()) / bf.getClose();
+					// double difTL = (data.getLow() - bf.getClose()) /
+					// bf.getClose();
 					double difTH = (data.getHigh() - bf.getClose()) / bf.getClose();
-					double difTC = (data.getClose() - bf.getClose()) / bf.getClose();
+					// double difTC = (data.getClose() - bf.getClose()) /
+					// bf.getClose();
 
-					double bdifH = (bf.getHigh() - history.startMoney) / history.startMoney;
+					// double bdifH = (bf.getHigh() - history.startMoney) /
+					// history.startMoney;
 					double bdifL = (bf.getLow() - history.startMoney) / history.startMoney;
-					double bdifC = (bf.getClose() - history.startMoney) / history.startMoney;
-					double bdifS = (bf.getStart() - history.startMoney) / history.startMoney;
+					// double bdifC = (bf.getClose() - history.startMoney) /
+					// history.startMoney;
+					// double bdifS = (bf.getStart() - history.startMoney) /
+					// history.startMoney;
 					double dif = 0;
 					boolean okFlag = false;
 					if (difS < difH || difTS < 0.098) {
 						if (difH > win) {
-							double av = (difH + difS) / 2d;
+							// double av = (difH + difS) / 2d;
 							if (difS > win) {
 								dif = difS;
 								okFlag = true;
@@ -218,6 +234,8 @@ public class Caluculate {
 							history.setNowWin(result);
 							history.setEnd(data.getDate());
 							history.endMoney = history.getStartMoney() * (1 + dif);
+							history.now.setBuyHistory(history);
+							;
 							removeList.add(history);
 							other.historys.add(history);
 							allHistory.addHistory(history);
@@ -506,7 +524,7 @@ public class Caluculate {
 	//
 	// }
 	public boolean canBuy(List<LycjssFlagData> datas, int[] samples, int start) {
-		tempScore = 0;
+		tempScore = getCalculateNode().getPc();
 
 		LycjssFlagData temp = new LycjssFlagData();
 
@@ -522,14 +540,23 @@ public class Caluculate {
 				node.getParb().put(n, 0f);
 			}
 			;
+			if (!node.getTodayP().containsKey(n)) {
+				node.getTodayP().put(n, 1f);
+			}
+			;
 			float preScore = node.getPara().get(n);
 			float allScore = node.getParb().get(n);
-			;
+			float todayScore = node.getTodayP().get(n);
+			float pwoScore = 0;
 			for (int i = 0; i < samples.length; i++) {
 				int num = samples[i];
 				LycjssFlagData data = datas.get(start - num);
 				tempMap = getCalculateNode().getParMapList().get(num);
 				Map<String, Float> temp2Map = getCalculateNode().getPar2MapList().get(num);
+				// Map<String, Float> powAMap =
+				// getCalculateNode().getParPowAMapList().get(num);
+				// Map<String, Float> powMap =
+				// getCalculateNode().getParPwoMapList().get(num);
 				try {
 					if (flter != null && !((RandomConfig) flter).enable()) {
 						return;
@@ -541,34 +568,53 @@ public class Caluculate {
 					if (!temp2Map.containsKey(n)) {
 						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter());
 					}
+					// if (!powAMap.containsKey(n)) {
+					// powAMap.put(n, 0f);
+					// }
+					// if (!powMap.containsKey(n)) {
+					// powMap.put(n, 1f);
+					// }
 					if (v instanceof Float) {
-						preScore += f.getFloat(data) * tempMap.get(n);
-						allScore += f.getFloat(data) * temp2Map.get(n);
+						float vf = f.getFloat(data);
+						preScore += vf * tempMap.get(n);
+						allScore += vf * temp2Map.get(n);
+						// pwoScore+=powAMap.get(n)*Helper.pow(vf,
+						// powMap.get(n)) ;
+
 					} else if (v instanceof Double) {
-						preScore += f.getDouble(data) * tempMap.get(n);
-						allScore += f.getDouble(data) * temp2Map.get(n);
+						double vd = f.getDouble(data);
+						preScore += vd * tempMap.get(n);
+						allScore += vd * temp2Map.get(n);
+						// pwoScore+=powAMap.get(n)*Helper.pow(vd,
+						// powMap.get(n)) ;
 					} else if (v instanceof Integer) {
-						preScore += f.getInt(data) * tempMap.get(n);
-						allScore += f.getDouble(data) * temp2Map.get(n);
+						int vi = f.getInt(data);
+						preScore += vi * tempMap.get(n);
+						allScore += vi * temp2Map.get(n);
+						// pwoScore+=powAMap.get(n)*Helper.pow(vi,
+						// powMap.get(n)) ;
 					}
 					if (v instanceof Long) {
-						preScore += f.getLong(data) * tempMap.get(n);
-						allScore += f.getLong(data) * temp2Map.get(n);
+						long vl = f.getLong(data);
+						preScore += vl * tempMap.get(n);
+						allScore += vl * temp2Map.get(n);
+						// pwoScore+=powAMap.get(n)*Helper.pow(vl,
+						// powMap.get(n)) ;
 					}
 				} catch (Exception e) {
 					// System.err.println("name:" + n);
 					e.printStackTrace();
 				}
-				try {
-					// System.err.println("v:" + f.get(data) + " i:" + i + " " +
-					// preScore + " all:" + allScore);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// try {
+				// // System.err.println("v:" + f.get(data) + " i:" + i + " " +
+				// // preScore + " all:" + allScore);
+				// } catch (Exception e) {
+				// // TODO Auto-generated catch block
+				// e.printStackTrace();
+				// }
 			}
 			float score = allScore != 0 ? preScore / allScore : 0;
-			tempScore += score;
+			tempScore += score * todayScore + pwoScore;
 			// System.err.println("name:" + n + " " + score + " sum:" +
 			// tempScore);
 		}, RandomConfig.class);
@@ -578,7 +624,7 @@ public class Caluculate {
 			// System.err.println(tempScore);
 			return true;
 		}
-		return false;
+		return true;
 
 	}
 

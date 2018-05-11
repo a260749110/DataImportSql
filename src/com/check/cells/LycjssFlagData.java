@@ -39,7 +39,7 @@ public class LycjssFlagData extends DataBase {
 	private float ttttDifrc;
 	private float ttttSumtt;
 	private float ttttFcd;;
-
+	private History buyHistory;
 	public float getLydmiPdi() {
 		return lydmiPdi;
 	}
@@ -367,6 +367,14 @@ public class LycjssFlagData extends DataBase {
 
 	public void setLycjdmiFlagsumsshow(float lycjdmiFlagsumsshow) {
 		this.lycjdmiFlagsumsshow = lycjdmiFlagsumsshow;
+	}
+
+	public History getBuyHistory() {
+		return buyHistory;
+	}
+
+	public void setBuyHistory(History buyHistory) {
+		this.buyHistory = buyHistory;
 	}
 
 }

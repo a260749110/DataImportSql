@@ -46,23 +46,23 @@ public class BigCalculateMain {
 	private static void run1() {
 		int tc = count;
 
-		lock.lock();
-		try {
+//		lock.lock();
+//		try {
 			count++;
-		} finally {
-			lock.unlock();
-		}
+//		} finally {
+//			lock.unlock();
+//		}
 		tList.add(tc);
 		while (true) {
 			try {
 				long start = System.currentTimeMillis();
-				lock.lock();
-				try {
-					allCount++;
-				} finally {
-					lock.unlock();
-				}
-
+//				lock.lock();
+//				try {
+//					allCount++;
+//				} finally {
+//					lock.unlock();
+//				}
+				allCount++;
 				BigCalculateJob bigCalculateJob = new BigCalculateJob();
 				bigCalculateJob.init();
 

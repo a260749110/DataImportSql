@@ -32,7 +32,9 @@ public class ImportConfig {
 
 	@Value("${gaussian_per:0.5}")
 	private Float gaussianPer;
-
+	@Value("${per_pow_max:2}")
+	private double perPowMax;
+	
 	@Value("${gaussian_mul:2}")
 	private Float gaussianMul;
 
@@ -45,6 +47,10 @@ public class ImportConfig {
 	private float mulPer;
 	@Value("${mul_step:0.2}")
 	private float mulStep;
+	
+	
+	@Value("${ra_up:50}")
+	private double raUp;
 	/**
 	 * 随时间推移冷却系数
 	 */
@@ -244,6 +250,22 @@ public class ImportConfig {
 
 	public void setScoreDown(double scoreDown) {
 		this.scoreDown = scoreDown;
+	}
+
+	public double getRaUp() {
+		return raUp;
+	}
+
+	public void setRaUp(double raUp) {
+		this.raUp = raUp;
+	}
+
+	public double getPerPowMax() {
+		return perPowMax;
+	}
+
+	public void setPerPowMax(double perPowMax) {
+		this.perPowMax = perPowMax;
 	}
 
 }

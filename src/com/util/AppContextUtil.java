@@ -52,4 +52,5 @@ public class AppContextUtil {
 	public CDataBaseResultDao getCDataBaseResultDao() {
 		return getBean(CDataBaseResultDao.class);
 	}
+
 }

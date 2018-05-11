@@ -40,7 +40,7 @@ public class BigCalculateJob {
 				nodes = new ArrayList<>();
 			}
 		}
-		DaySimulationJob dj = new DaySimulationJob();
+		DaySimulationJob dj =  new DaySimulationScoreJob();// new DaySimulationJob();
 
 		node = new CalculateNode();
 

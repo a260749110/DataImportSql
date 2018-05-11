@@ -29,13 +29,13 @@ public class DaySimulationJob {
 	/**
 	 * 剩余金钱
 	 */
-	private double surplusMoney = defMoney;
+	protected double surplusMoney = defMoney;
 	public double moneyALL = defMoney;
 	public double upgradeRate = 1;
 	public double upgradeMup = 7;
-	private Date startDate = null;
-	private Date endDate = null;
-	private Map<String, Double> yearWinMap = new HashMap<>();
+	protected Date startDate = null;
+	protected Date endDate = null;
+	protected Map<String, Double> yearWinMap = new HashMap<>();
 	public List<NewHistory> historybuyList = new ArrayList<>();
 	Map<String, Double> historyWinloseMap = new HashMap<>();
 	public boolean saveFlag = false;
@@ -58,6 +58,7 @@ public class DaySimulationJob {
 	}
 
 	public synchronized void addHistory(History history) {
+		history.now.setBuyHistory(history);
 		historyList.add(history);
 
 	}
@@ -264,6 +265,10 @@ public class DaySimulationJob {
 				List<History> tList = sortList(tempBuyList, size);
 				// System.err.println("size:" + size);
 				for (History bh : tList) {
+					if (bh.getScore() <= 0) {
+						continue;
+					}
+					// System.err.println(bh.getScore());
 					if (!bh.buySuccessFlag)
 						continue;
 					if (surplusMoney < rate) {
@@ -303,20 +308,20 @@ public class DaySimulationJob {
 						yearResult.unSuccess += 1;
 						unsuccess += 1;
 					}
-					CHistoryBuySellPo hbsPo = new CHistoryBuySellPo();
-					CHistoryBuySellPK hbsPk = new CHistoryBuySellPK();
-
-					hbsPk.setId((int) historyBuy.history.getId());
-					hbsPk.setBuyDate(start);
-					hbsPk.setSellDate(end);
-					hbsPo.setId(hbsPk);
-					hbsPo.setBuyMoney(historyBuy.history.getStartMoney());
-					hbsPo.setSellMoney(historyBuy.history.getEndMoney());
-					hbsPo.setDif(historyBuy.history.getDif());
-					hbsPo.setRate(historyBuy.buy);
-					hbsPo.setUserDay((int) ((hbsPk.getSellDate().getTime() - hbsPk.getBuyDate().getTime())
-							/ (3600l * 1000l * 24l)));
 					if (saveHistoryFlag) {
+						CHistoryBuySellPo hbsPo = new CHistoryBuySellPo();
+						CHistoryBuySellPK hbsPk = new CHistoryBuySellPK();
+
+						hbsPk.setId((int) historyBuy.history.getId());
+						hbsPk.setBuyDate(start);
+						hbsPk.setSellDate(end);
+						hbsPo.setId(hbsPk);
+						hbsPo.setBuyMoney(historyBuy.history.getStartMoney());
+						hbsPo.setSellMoney(historyBuy.history.getEndMoney());
+						hbsPo.setDif(historyBuy.history.getDif());
+						hbsPo.setRate(historyBuy.buy);
+						hbsPo.setUserDay((int) ((hbsPk.getSellDate().getTime() - hbsPk.getBuyDate().getTime())
+								/ (3600l * 1000l * 24l)));
 						AppContextUtil.instance.getCHistoryBuySellDao().save(hbsPo);
 					}
 					// printErr("S " + historyBuy.history.getId() + ":" +
@@ -381,29 +386,34 @@ public class DaySimulationJob {
 		// }
 		// });
 
-		buyList.sort((a, b) -> {
-			return Long.compare(a.getEndTime(), b.getEndTime());
-			// return
-			// a.getEndTime()>b.getEndTime()?1:a.getEndTime()==b.getEndTime()?0:-1;
-		});
+		// {
+		// buyList.sort((a, b) -> {
+		// return Long.compare(a.getEndTime(), b.getEndTime());
+		// // return
+		// //
+		// a.getEndTime()>b.getEndTime()?1:a.getEndTime()==b.getEndTime()?0:-1;
+		// });
+		// //计算品均时间
+		// for (History h : buyList) {
+		//
+		// long dDif = (h.getEndTime() - h.getStartTime()) / (3600l * 1000l *
+		// 24l);
+		// allDif += dDif;
+		// if (h.takeFlag == true)
+		// take++;
+		// // printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" +
+		// // df.format(h.getStartMoney()) + " ,卖出时间:"
+		// // + h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" +
+		// // df.format(h.getDif() * 100) + "%"
+		// // + " 耗时：" + dDif + "天 score:" + h.getScore());
+		// }
+		// if (buyList.size() == 0) {
+		// allDif = 0;
+		// } else {
+		// allDif /= buyList.size();
+		// }
+		// }
 
-		for (History h : buyList) {
-
-			long dDif = (h.getEndTime() - h.getStartTime()) / (3600l * 1000l * 24l);
-			allDif += dDif;
-			if (h.takeFlag == true)
-				take++;
-			// printErr(h.getId() + ":\t买入时间:" + h.getStart() + "买入价格:" +
-			// df.format(h.getStartMoney()) + " ,卖出时间:"
-			// + h.getEnd() + " 卖出价格:" + df.format(h.getEndMoney()) + "\t 收益:" +
-			// df.format(h.getDif() * 100) + "%"
-			// + " 耗时：" + dDif + "天 score:" + h.getScore());
-		}
-		if (buyList.size() == 0) {
-			allDif = 0;
-		} else {
-			allDif /= buyList.size();
-		}
 		System.err.println("dCount:" + dCount);
 		System.err.println("平均时间：" + allDif + ",总共：" + buyList.size() + "个交易" + "   " + moneyALL + "  "
 				+ (moneyALL / startM) + " dscore:" + dscore);
@@ -440,12 +450,12 @@ public class DaySimulationJob {
 		return rate;
 	}
 
-	private void refreshYearWin(String year) {
+	protected void refreshYearWin(String year) {
 
 		yearWinMap.put(year, moneyALL);
 	}
 
-	private static double getSortScore(History h) {
+	protected static double getSortScore(History h) {
 		return h.getScore();
 	}
 
@@ -461,7 +471,7 @@ public class DaySimulationJob {
 		return temp;
 	}
 
-	private void printErr(String str) {
+	protected void printErr(String str) {
 		if (showFlag) {
 			System.err.println(str);
 		}

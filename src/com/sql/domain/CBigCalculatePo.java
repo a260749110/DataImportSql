@@ -23,11 +23,11 @@ public class CBigCalculatePo implements Serializable {
 	@Column(name = "data_base")
 	private String dataBase;
 	@Column(name = "score")
-	private float score;
+	private double score;
 	@Column(name = "s_score")
-	private float sScore;
+	private double sScore;
 	@Column(name = "dscore")
-	private float dscore;
+	private double dscore;
 
 	public CBigCalculatePo() {
 	}
@@ -48,27 +48,27 @@ public class CBigCalculatePo implements Serializable {
 		this.dataBase = dataBase;
 	}
 
-	public float getScore() {
+	public double getScore() {
 		return this.score;
 	}
 
-	public void setScore(float score) {
+	public void setScore(double score) {
 		this.score = score;
 	}
 
-	public float getsScore() {
+	public double getsScore() {
 		return sScore;
 	}
 
-	public void setsScore(float sScore) {
+	public void setsScore(double sScore) {
 		this.sScore = sScore;
 	}
 
-	public float getDscore() {
+	public double getDscore() {
 		return dscore;
 	}
 
-	public void setDscore(float dscore) {
+	public void setDscore(double dscore) {
 		this.dscore = dscore;
 	}
 
