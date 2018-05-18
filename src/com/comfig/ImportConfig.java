@@ -47,8 +47,11 @@ public class ImportConfig {
 	private float mulPer;
 	@Value("${mul_step:0.2}")
 	private float mulStep;
+	@Value("${fail_rate:1.5}")
+	private float failRate;
 	
-	
+	@Value("${score_pow:1.5}")
+	private float scorePow;
 	@Value("${ra_up:50}")
 	private double raUp;
 	/**
@@ -266,6 +269,22 @@ public class ImportConfig {
 
 	public void setPerPowMax(double perPowMax) {
 		this.perPowMax = perPowMax;
+	}
+
+	public float getFailRate() {
+		return failRate;
+	}
+
+	public void setFailRate(float failRate) {
+		this.failRate = failRate;
+	}
+
+	public float getScorePow() {
+		return scorePow;
+	}
+
+	public void setScorePow(float scorePow) {
+		this.scorePow = scorePow;
 	}
 
 }

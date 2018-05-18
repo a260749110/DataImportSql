@@ -43,7 +43,7 @@ public class Caluculate {
 	public double resultAll = 1;
 	public final static double loss = Config.lose_per;
 	public final static double win = Config.win_per;
-	Other other = new Other();
+	// Other other = new Other();
 	ScoreColdList sl = new ScoreColdList(50);
 	int useDay = 0;
 	int triCount = 0;
@@ -115,6 +115,7 @@ public class Caluculate {
 					history.setAllSize(datas.size());
 					history.setStart(data.getDate());
 					history.startMoney = buyMoney(data, bf, buyPoint);
+					history.buyI = i;
 					histories.add(history);
 					history.setScore(tempScore);
 					history.now = data;
@@ -215,33 +216,37 @@ public class Caluculate {
 					}
 
 					if (okFlag) {
-						sl.add(dif, i - history.getSize());
-						if (canBuy(history.getScore())) {
+						history.usersI = i - history.buyI;
+						if (history.usersI != 0) {
+							sl.add(dif, i - history.getSize());
+							if (canBuy(history.getScore())) {
 
-							if (dif > 0) {
-								successScore.add(history.getScore());
-								success++;
-							} else {
-								unSuccess++;
+								if (dif > 0) {
+									successScore.add(history.getScore());
+									success++;
+								} else {
+									unSuccess++;
+								}
+								result += dif;
+								resultAll += dif;
+								useDay += i - history.getiSize();
+								history.setSize(i - history.getiSize());
+								history.setId(id);
+								triCount++;
+								history.setDif(dif);
+								history.setNowWin(result);
+								history.setEnd(data.getDate());
+								history.endMoney = history.getStartMoney() * (1 + dif);
+								history.now.setBuyHistory(history);
+								;
+								removeList.add(history);
+								// other.historys.add(history);
+								allHistory.addHistory(history);
+								count++;
 							}
-							result += dif;
-							resultAll += dif;
-							useDay += i - history.getSize();
-							history.setSize(i - history.getSize());
-							history.setId(id);
-							triCount++;
-							history.setDif(dif);
-							history.setNowWin(result);
-							history.setEnd(data.getDate());
-							history.endMoney = history.getStartMoney() * (1 + dif);
-							history.now.setBuyHistory(history);
-							;
-							removeList.add(history);
-							other.historys.add(history);
-							allHistory.addHistory(history);
-							count++;
 						} else {
 							removeList.add(history);
+							history.usersI = i - history.buyI;
 						}
 					} else {
 						if (i == datas.size() - 1) {
@@ -270,10 +275,14 @@ public class Caluculate {
 								}
 								history.endMoney = history.getStartMoney() * (1 + dif);
 								removeList.add(history);
-								other.historys.add(history);
-								allHistory.addHistory(history);
+								history.usersI = i - history.buyI;
+								if (history.usersI != 0) {
+									// other.historys.add(history);
+									allHistory.addHistory(history);
+								}
 								count++;
 							} else {
+								history.usersI = i - history.buyI;
 								removeList.add(history);
 							}
 						}
@@ -359,125 +368,131 @@ public class Caluculate {
 	public float tempScore = 0;
 
 	public boolean canBuy(LycjssFlagData now, LycjssFlagData bf) {
-		tempScore = 0;
-		Helper.eachField(now, LycjssFlagData.class, (f, n, v, flter) -> {
-			try {
-				if (flter != null && !((RandomConfig) flter).enable()) {
-					return;
-				}
-				if (!getCalculateNode().getTodayP().containsKey(n)) {
-					getCalculateNode().getTodayP().put(n, ImportConfig.getInstance().getDef_parameter());
-				}
-				tempScore += Float.valueOf(v.toString()) * getCalculateNode().getTodayP().get(n);
-			} catch (Exception e) {
-				System.err.println("name:" + n);
-				e.printStackTrace();
-			}
-
-		}, RandomConfig.class);
-
-		Helper.eachField(bf, LycjssFlagData.class, (f, n, v, flter) -> {
-			try {
-				if (flter != null && !((RandomConfig) flter).enable() && !((RandomConfig) flter).calculateYestoday()) {
-					return;
-				}
-
-				if (!getCalculateNode().getYestodayP().containsKey(n)) {
-					getCalculateNode().getYestodayP().put(n, ImportConfig.getInstance().getDef_parameter());
-				}
-				tempScore += Float.valueOf(v.toString()) * getCalculateNode().getYestodayP().get(n);
-			} catch (Exception e) {
-				System.err.println("name:" + n);
-				e.printStackTrace();
-			}
-
-		}, RandomConfig.class);
-
-		if (tempScore > 0) {
-			return true;
-		}
+		// tempScore = 0;
+		// Helper.eachField(now, LycjssFlagData.class, (f, n, v, flter) -> {
+		// try {
+		// if (flter != null && !((RandomConfig) flter).enable()) {
+		// return;
+		// }
+		//// if (!getCalculateNode().getTodayP().containsKey(n)) {
+		//// getCalculateNode().getTodayP().put(n,
+		// ImportConfig.getInstance().getDef_parameter());
+		//// }
+		// tempScore += Float.valueOf(v.toString()) *
+		// f.getFloat(getCalculateNode().getTodayP()) ;
+		// } catch (Exception e) {
+		// System.err.println("name:" + n);
+		// e.printStackTrace();
+		// }
+		//
+		// }, RandomConfig.class);
+		//
+		// Helper.eachField(bf, LycjssFlagData.class, (f, n, v, flter) -> {
+		// try {
+		// if (flter != null && !((RandomConfig) flter).enable() &&
+		// !((RandomConfig) flter).calculateYestoday()) {
+		// return;
+		// }
+		//
+		// if (!getCalculateNode().getYestodayP().containsKey(n)) {
+		// getCalculateNode().getYestodayP().put(n,
+		// ImportConfig.getInstance().getDef_parameter());
+		// }
+		// tempScore += Float.valueOf(v.toString()) *
+		// getCalculateNode().getYestodayP().get(n);
+		// } catch (Exception e) {
+		// System.err.println("name:" + n);
+		// e.printStackTrace();
+		// }
+		//
+		// }, RandomConfig.class);
+		//
+		// if (tempScore > 0) {
+		// return true;
+		// }
 		return false;
 
 	}
 
-	private Map<String, Float> tempMap;
+	private LycjssFlagData tempMap;
 
 	public boolean canBuy(List<LycjssFlagData> datas, int size) {
 		tempScore = 0;
-
-		for (int i = 0; i < size; i++) {
-			LycjssFlagData data = datas.get(i);
-			tempMap = getCalculateNode().getParMapList().get(i);
-			Map<String, Float> temp2Map = getCalculateNode().getPar2MapList().get(i);
-
-			Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
-				try {
-					if (flter != null && !((RandomConfig) flter).enable()) {
-						return;
-					}
-					if (!tempMap.containsKey(n)) {
-						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
-					}
-					if (!temp2Map.containsKey(n)) {
-						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter() + 1);
-					}
-
-					tempScore += Float.valueOf(v.toString()) * tempMap.get(n);
-				} catch (Exception e) {
-					System.err.println("name:" + n);
-					e.printStackTrace();
-				}
-
-			}, RandomConfig.class);
-		}
-		// System.err.println(tempScore);
-		if (tempScore > 0) {
-			// System.err.println(tempScore);
-			return true;
-		}
+		//
+		// for (int i = 0; i < size; i++) {
+		// LycjssFlagData data = datas.get(i);
+		// tempMap = getCalculateNode().getParMapList().get(i);
+		// Map<String, Float> temp2Map =
+		// getCalculateNode().getPar2MapList().get(i);
+		//
+		// Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
+		// try {
+		// if (flter != null && !((RandomConfig) flter).enable()) {
+		// return;
+		// }
+		// if (!tempMap.containsKey(n)) {
+		// tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
+		// }
+		// if (!temp2Map.containsKey(n)) {
+		// temp2Map.put(n, ImportConfig.getInstance().getDef_parameter() + 1);
+		// }
+		//
+		// tempScore += Float.valueOf(v.toString()) * tempMap.get(n);
+		// } catch (Exception e) {
+		// System.err.println("name:" + n);
+		// e.printStackTrace();
+		// }
+		//
+		// }, RandomConfig.class);
+		// }
+		// // System.err.println(tempScore);
+		// if (tempScore > 0) {
+		// // System.err.println(tempScore);
+		// return true;
+		// }
 		return false;
 
 	}
 
-	public boolean canBuy(List<LycjssFlagData> datas, int[] samples) {
-		tempScore = 0;
-
-		for (int i = 0; i < samples.length; i++) {
-			LycjssFlagData data = datas.get(samples[i]);
-			tempMap = getCalculateNode().getParMapList().get(samples[i]);
-			Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
-				try {
-					if (flter != null && !((RandomConfig) flter).enable()) {
-						return;
-					}
-					if (!tempMap.containsKey(n)) {
-						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
-					}
-					if (v instanceof Float) {
-						tempScore += (Float) v * tempMap.get(n);
-					} else if (v instanceof Double) {
-						tempScore += (Double) v * tempMap.get(n);
-					} else if (v instanceof Integer) {
-						tempScore += (Integer) v * tempMap.get(n);
-					}
-					if (v instanceof Long) {
-						tempScore += (Long) v * tempMap.get(n);
-					}
-				} catch (Exception e) {
-					System.err.println("name:" + n);
-					e.printStackTrace();
-				}
-
-			}, RandomConfig.class);
-		}
-		// System.err.println(tempScore);
-		if (tempScore > 0) {
-			// System.err.println(tempScore);
-			return true;
-		}
-		return false;
-
-	}
+	// public boolean canBuy(List<LycjssFlagData> datas, int[] samples) {
+	// tempScore = 0;
+	//
+	// for (int i = 0; i < samples.length; i++) {
+	// LycjssFlagData data = datas.get(samples[i]);
+	// tempMap = getCalculateNode().getParMapList().get(samples[i]);
+	// Helper.eachField(data, LycjssFlagData.class, (f, n, v, flter) -> {
+	// try {
+	// if (flter != null && !((RandomConfig) flter).enable()) {
+	// return;
+	// }
+	// if (!tempMap.containsKey(n)) {
+	// tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
+	// }
+	// if (v instanceof Float) {
+	// tempScore += (Float) v * tempMap.get(n);
+	// } else if (v instanceof Double) {
+	// tempScore += (Double) v * tempMap.get(n);
+	// } else if (v instanceof Integer) {
+	// tempScore += (Integer) v * tempMap.get(n);
+	// }
+	// if (v instanceof Long) {
+	// tempScore += (Long) v * tempMap.get(n);
+	// }
+	// } catch (Exception e) {
+	// System.err.println("name:" + n);
+	// e.printStackTrace();
+	// }
+	//
+	// }, RandomConfig.class);
+	// }
+	// // System.err.println(tempScore);
+	// if (tempScore > 0) {
+	// // System.err.println(tempScore);
+	// return true;
+	// }
+	// return false;
+	//
+	// }
 
 	// public boolean canBuy(List<LycjssFlagData> datas, int[] samples, int
 	// start) {
@@ -533,90 +548,81 @@ public class Caluculate {
 			if (flter != null && !((RandomConfig) flter).enable()) {
 				return;
 			}
-			if (!node.getPara().containsKey(n)) {
-				node.getPara().put(n, 0f);
-			}
-			if (!node.getParb().containsKey(n)) {
-				node.getParb().put(n, 0f);
-			}
-			;
-			if (!node.getTodayP().containsKey(n)) {
-				node.getTodayP().put(n, 1f);
-			}
-			;
-			float preScore = node.getPara().get(n);
-			float allScore = node.getParb().get(n);
-			float todayScore = node.getTodayP().get(n);
-			float pwoScore = 0;
-			for (int i = 0; i < samples.length; i++) {
-				int num = samples[i];
-				LycjssFlagData data = datas.get(start - num);
-				tempMap = getCalculateNode().getParMapList().get(num);
-				Map<String, Float> temp2Map = getCalculateNode().getPar2MapList().get(num);
-				// Map<String, Float> powAMap =
-				// getCalculateNode().getParPowAMapList().get(num);
-				// Map<String, Float> powMap =
-				// getCalculateNode().getParPwoMapList().get(num);
-				try {
-					if (flter != null && !((RandomConfig) flter).enable()) {
-						return;
-					}
-					// System.err.println(temp2Map.get(n));
-					if (!tempMap.containsKey(n)) {
-						tempMap.put(n, ImportConfig.getInstance().getDef_parameter());
-					}
-					if (!temp2Map.containsKey(n)) {
-						temp2Map.put(n, ImportConfig.getInstance().getDef_parameter());
-					}
-					// if (!powAMap.containsKey(n)) {
-					// powAMap.put(n, 0f);
-					// }
-					// if (!powMap.containsKey(n)) {
-					// powMap.put(n, 1f);
-					// }
-					if (v instanceof Float) {
+
+			try {
+				float preScore = f.getFloat(node.getPara());
+
+				float allScore = f.getFloat(node.getParb());
+				float todayScore = f.getFloat(node.getTodayP());
+				float pwoScore = 0;
+				for (int i = 0; i < samples.length; i++) {
+					int num = samples[i];
+					LycjssFlagData data = datas.get(start - num);
+					tempMap = getCalculateNode().getParMapList().get(num);
+					LycjssFlagData temp2Map = getCalculateNode().getPar2MapList().get(num);
+					// Map<String, Float> powAMap =
+					// getCalculateNode().getParPowAMapList().get(num);
+					// Map<String, Float> powMap =
+					// getCalculateNode().getParPwoMapList().get(num);
+					try {
+						if (flter != null && !((RandomConfig) flter).enable()) {
+							return;
+						}
+						// System.err.println(temp2Map.get(n));
+						// if (!tempMap.containsKey(n)) {
+						// tempMap.put(n,
+						// ImportConfig.getInstance().getDef_parameter());
+						// }
+						// if (!temp2Map.containsKey(n)) {
+						// temp2Map.put(n,
+						// ImportConfig.getInstance().getDef_parameter());
+						// }
+						// if (!powAMap.containsKey(n)) {
+						// powAMap.put(n, 0f);
+						// }
+						// if (!powMap.containsKey(n)) {
+						// powMap.put(n, 1f);
+						// }
+						// if (v instanceof Float) {
 						float vf = f.getFloat(data);
-						preScore += vf * tempMap.get(n);
-						allScore += vf * temp2Map.get(n);
+						preScore += vf * f.getFloat(tempMap);
+						allScore += vf * f.getFloat(temp2Map);
 						// pwoScore+=powAMap.get(n)*Helper.pow(vf,
 						// powMap.get(n)) ;
 
-					} else if (v instanceof Double) {
-						double vd = f.getDouble(data);
-						preScore += vd * tempMap.get(n);
-						allScore += vd * temp2Map.get(n);
-						// pwoScore+=powAMap.get(n)*Helper.pow(vd,
-						// powMap.get(n)) ;
-					} else if (v instanceof Integer) {
-						int vi = f.getInt(data);
-						preScore += vi * tempMap.get(n);
-						allScore += vi * temp2Map.get(n);
-						// pwoScore+=powAMap.get(n)*Helper.pow(vi,
-						// powMap.get(n)) ;
+						// } else if (v instanceof Double) {
+						// double vd = f.getDouble(data);
+						// preScore += vd * tempMap.get(n);
+						// allScore += vd * temp2Map.get(n);
+						// // pwoScore+=powAMap.get(n)*Helper.pow(vd,
+						// // powMap.get(n)) ;
+						// } else if (v instanceof Integer) {
+						// int vi = f.getInt(data);
+						// preScore += vi * tempMap.get(n);
+						// allScore += vi * temp2Map.get(n);
+						// // pwoScore+=powAMap.get(n)*Helper.pow(vi,
+						// // powMap.get(n)) ;
+						// }
+						// if (v instanceof Long) {
+						// long vl = f.getLong(data);
+						// preScore += vl * tempMap.get(n);
+						// allScore += vl * temp2Map.get(n);
+						// // pwoScore+=powAMap.get(n)*Helper.pow(vl,
+						// // powMap.get(n)) ;
+						// }
+					} catch (Exception e) {
+
+						e.printStackTrace();
 					}
-					if (v instanceof Long) {
-						long vl = f.getLong(data);
-						preScore += vl * tempMap.get(n);
-						allScore += vl * temp2Map.get(n);
-						// pwoScore+=powAMap.get(n)*Helper.pow(vl,
-						// powMap.get(n)) ;
-					}
-				} catch (Exception e) {
-					// System.err.println("name:" + n);
-					e.printStackTrace();
+
 				}
-				// try {
-				// // System.err.println("v:" + f.get(data) + " i:" + i + " " +
-				// // preScore + " all:" + allScore);
-				// } catch (Exception e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
+				float score = allScore != 0 ? preScore / allScore : 0;
+				tempScore += score * todayScore + pwoScore;
+				// System.err.println("name:" + n + " " + score + " sum:" +
+				// tempScore);
+			} catch (Exception ee) {
+				ee.printStackTrace();
 			}
-			float score = allScore != 0 ? preScore / allScore : 0;
-			tempScore += score * todayScore + pwoScore;
-			// System.err.println("name:" + n + " " + score + " sum:" +
-			// tempScore);
 		}, RandomConfig.class);
 
 		// System.err.println(tempScore);
@@ -630,13 +636,6 @@ public class Caluculate {
 
 	public static boolean canBuy(double score) {
 
-		// if (score < 1) {
-		// double rand = random.nextDouble();
-		// rand = Math.pow(rand, 1);
-		// if (rand > score) {
-		// return true;
-		// }
-		// }
 		return true;
 	}
 

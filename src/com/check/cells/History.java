@@ -17,8 +17,8 @@ public class History {
 	public double dif;
 	public double nowWin;
 	public double score = 1;
-	private  int allSize=0;
-	private int iSize=0;
+	private int allSize = 0;
+	private int iSize = 0;
 	public int index = 0;
 	public boolean takeFlag = false;
 	public LycjssFlagData now;
@@ -29,6 +29,8 @@ public class History {
 	public double variance;
 	private long startTime;
 	private long endTime;
+	public int buyI;
+	public int usersI;
 
 	public Date getStart() {
 		return start;

@@ -11,10 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.bigcalculate.cell.CalculateNode;
-import com.bigcalculate.job.DaySimulationJob;
+import com.check.cells.LycjssFlagData;
 import com.comfig.ImportConfig;
 import com.sql.domain.CBigCalculatePo;
 import com.util.MathHelper.IGetValue;
@@ -394,7 +393,7 @@ public class Helper {
 	}
 
 	public static interface EachField<T> {
-		public void each(Field field, String name, Object value, T filter);
+		public void each(Field field, String name, Object value, T filter) throws Exception;
 	}
 
 	public static CalculateNode randomNode(CalculateNode node) {
@@ -450,13 +449,14 @@ public class Helper {
 		// }
 		// System.err.println( "i:"+node.getParMapList().size());
 		for (int i = node.getParMapList().size(); i <= size; i++) {
-			Map<String, Float> map = new HashMap<>();
+			LycjssFlagData map = new LycjssFlagData();
 			node.getParMapList().add(map);
 		}
 		for (int i = node.getPar2MapList().size(); i <= size; i++) {
-			Map<String, Float> map = new HashMap<>();
+			LycjssFlagData map = new LycjssFlagData();
 			node.getPar2MapList().add(map);
 		}
+
 		// for (int i = node.getParPwoMapList().size(); i <= size; i++) {
 		// Map<String, Float> map = new HashMap<>();
 		// node.getParPwoMapList().add(map);
@@ -483,117 +483,119 @@ public class Helper {
 		result.setScore(0);
 		int[] samples = ImportConfig.getInstance().getSimples();
 		initNode(result, samples[samples.length - 1]);
-		for (int i = 0; i < samples.length; i++) {
-			{
-				Map<String, Float> fatherMap = father.getParMapList().get(samples[i]);
-				Map<String, Float> motherMap = mother.getParMapList().get(samples[i]);
-				Map<String, Float> somMap = new HashMap<>();
-				for (String k : fatherMap.keySet()) {
-					if (random.nextFloat() < 0.5f) {
+		try {
 
-						somMap.put(k, fatherMap.get(k));
-
-					} else {
-						if (motherMap.containsKey(k)) {
-							somMap.put(k, motherMap.get(k));
-						} else {
-							somMap.put(k, 0f);
+			for (int i = 0; i < samples.length; i++) {
+				{
+					LycjssFlagData fatherMap = father.getParMapList().get(samples[i]);
+					LycjssFlagData motherMap = mother.getParMapList().get(samples[i]);
+					LycjssFlagData somMap = new LycjssFlagData();
+					Helper.eachField(fatherMap, LycjssFlagData.class, (f, n, v, flter) -> {
+						if (flter != null && !((RandomConfig) flter).enable()) {
+							return;
 						}
-					}
 
-				}
-				result.getParMapList().set(samples[i], somMap);
-			}
-			{
-				Map<String, Float> fatherMap = father.getPar2MapList().get(samples[i]);
-				Map<String, Float> motherMap = mother.getPar2MapList().get(samples[i]);
-				Map<String, Float> somMap = new HashMap<>();
-				for (String k : fatherMap.keySet()) {
-					if (random.nextFloat() < 0.5f) {
+						if (random.nextFloat() < 0.5f) {
+							f.setFloat(somMap, f.getFloat(fatherMap));
 
-						somMap.put(k, fatherMap.get(k));
-
-					} else {
-						if (motherMap.containsKey(k)) {
-							somMap.put(k, motherMap.get(k));
 						} else {
-							somMap.put(k, 0f);
+							f.setFloat(somMap, f.getFloat(motherMap));
 						}
-					}
 
+					},  RandomConfig.class);
+					result.getParMapList().set(samples[i], somMap);
 				}
-				result.getPar2MapList().set(samples[i], somMap);
+				{
+					LycjssFlagData fatherMap = father.getPar2MapList().get(samples[i]);
+					LycjssFlagData motherMap = mother.getPar2MapList().get(samples[i]);
+					LycjssFlagData somMap = new LycjssFlagData();
+					Helper.eachField(fatherMap, LycjssFlagData.class, (f, n, v, flter) -> {
+						if (flter != null && !((RandomConfig) flter).enable()) {
+							return;
+						}
+
+						if (random.nextFloat() < 0.5f) {
+							f.setFloat(somMap, f.getFloat(fatherMap));
+
+						} else {
+							f.setFloat(somMap, f.getFloat(motherMap));
+						}
+
+					},  RandomConfig.class);
+					result.getPar2MapList().set(samples[i], somMap);
+				}
+
+				// System.err.println("random:"+JSON.toJSONString(result));
 			}
 
-			// System.err.println("random:"+JSON.toJSONString(result));
-		}
+			{
+				LycjssFlagData fatherMap = father.getPara();
+				LycjssFlagData motherMap = mother.getPara();
+				LycjssFlagData somMap = new LycjssFlagData();
+				Helper.eachField(fatherMap, LycjssFlagData.class, (f, n, v, flter) -> {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
 
-		{
-			Map<String, Float> fatherMap = father.getPara();
-			Map<String, Float> motherMap = mother.getPara();
-			Map<String, Float> somMap = new HashMap<>();
-			for (String k : fatherMap.keySet()) {
-				if (random.nextFloat() < 0.5f) {
+					if (random.nextFloat() < 0.5f) {
+						f.setFloat(somMap, f.getFloat(fatherMap));
 
-					somMap.put(k, fatherMap.get(k));
-
-				} else {
-					if (motherMap.containsKey(k)) {
-						somMap.put(k, motherMap.get(k));
 					} else {
-						somMap.put(k, 0f);
+						f.setFloat(somMap, f.getFloat(motherMap));
 					}
-				}
 
+				},  RandomConfig.class);
+				result.setPara(somMap);
 			}
-			result.setPara(somMap);
-		}
 
-		{
-			Map<String, Float> fatherMap = father.getParb();
-			Map<String, Float> motherMap = mother.getParb();
-			Map<String, Float> somMap = new HashMap<>();
-			for (String k : fatherMap.keySet()) {
-				if (random.nextFloat() < 0.5f) {
+			{
+				LycjssFlagData fatherMap = father.getParb();
+				LycjssFlagData motherMap = mother.getParb();
+				LycjssFlagData somMap = new LycjssFlagData();
+				Helper.eachField(fatherMap, LycjssFlagData.class, (f, n, v, flter) -> {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
 
-					somMap.put(k, fatherMap.get(k));
+					if (random.nextFloat() < 0.5f) {
+						f.setFloat(somMap, f.getFloat(fatherMap));
 
-				} else {
-					if (motherMap.containsKey(k)) {
-						somMap.put(k, motherMap.get(k));
 					} else {
-						somMap.put(k, 0f);
+						f.setFloat(somMap, f.getFloat(motherMap));
 					}
-				}
 
+				},  RandomConfig.class);
+				result.setParb(somMap);
 			}
-			result.setParb(somMap);
-		}
 
-		{
-			Map<String, Float> fatherMap = father.getTodayP();
-			Map<String, Float> motherMap = mother.getTodayP();
-			Map<String, Float> somMap = new HashMap<>();
-			for (String k : fatherMap.keySet()) {
-				if (random.nextFloat() < 0.5f) {
+			{
+				LycjssFlagData fatherMap = father.getTodayP();
+				LycjssFlagData motherMap = mother.getTodayP();
+				LycjssFlagData somMap = new LycjssFlagData();
 
-					somMap.put(k, fatherMap.get(k));
+				Helper.eachField(fatherMap, LycjssFlagData.class, (f, n, v, flter) -> {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
 
-				} else {
-					if (motherMap.containsKey(k)) {
-						somMap.put(k, motherMap.get(k));
+					if (random.nextFloat() < 0.5f) {
+						f.setFloat(somMap, f.getFloat(fatherMap));
+
 					} else {
-						somMap.put(k, 0f);
+						f.setFloat(somMap, f.getFloat(motherMap));
 					}
-				}
 
+				},  RandomConfig.class);
+
+				result.setTodayP(somMap);
 			}
-			result.setTodayP(somMap);
-		}
-		if (random.nextFloat() < 0.5f) {
-			result.setPc(father.getPc());
-		} else {
-			result.setPc(mother.getPc());
+			if (random.nextFloat() < 0.5f) {
+				result.setPc(father.getPc());
+			} else {
+				result.setPc(mother.getPc());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return result;
 	}
@@ -602,156 +604,146 @@ public class Helper {
 		System.err.println("nomal raandom");
 		CalculateNode result = new CalculateNode();
 		// int i = 0;
-		HashSet<String> all=new HashSet<>();
-		HashSet<String> changeCachae=new HashSet<>();
-		result.setScore(node.getScore());
-		result.setsScore(node.getsScore());
-		result.setDscore(node.getDscore());
-		int[] samples = ImportConfig.getInstance().getSimples();
+		try {
 
-		initNode(result, samples[samples.length - 1]);
-		for (int j = 0; j < samples.length; j++) {
+			HashSet<String> all = new HashSet<>();
+			HashSet<String> changeCachae = new HashSet<>();
+			result.setScore(node.getScore());
+			result.setsScore(node.getsScore());
+			result.setDscore(node.getDscore());
+			int[] samples = ImportConfig.getInstance().getSimples();
+			initNode(result, samples[samples.length - 1]);
+			for (int j = 0; j < samples.length; j++) {
+				{
+					LycjssFlagData map = node.getParMapList().get(samples[j]);
+
+					Helper.eachField(map, LycjssFlagData.class, (f, n, v, flter) -> {
+						if (flter != null && !((RandomConfig) flter).enable()) {
+							return;
+						}
+
+						all.add(f.getName());
+						if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+							changeCachae.add(f.getName());
+							float next = nextRandom(f.getFloat(map));
+							f.setFloat(map, next);
+						}
+
+					},  RandomConfig.class);
+
+					result.getParMapList().set(samples[j], map);
+				}
+				{
+					LycjssFlagData map = node.getPar2MapList().get(samples[j]);
+
+					Helper.eachField(map, LycjssFlagData.class, (f, n, v, flter) -> {
+						if (flter != null && !((RandomConfig) flter).enable()) {
+							return;
+						}
+
+						all.add(f.getName());
+						if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+							changeCachae.add(f.getName());
+							float next = nextRandom(f.getFloat(map));
+							f.setFloat(map, next);
+						}
+
+					},  RandomConfig.class);
+
+					result.getPar2MapList().set(samples[j], map);
+				}
+
+			}
 			{
-				Map<String, Float> map = node.getParMapList().get(samples[j]);
-				for (String k : map.keySet()) {
-					all.add(k);
-					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-						changeCachae.add(k);
-						float next = nextRandom(map.get(k));
-						map.put(k, next);
-					} else {
-						map.put(k, map.get(k));
+				LycjssFlagData map = node.getPara();
+
+				Helper.eachField(map, LycjssFlagData.class, (f, n, v, flter) -> {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
 					}
 
-				}
-
-				result.getParMapList().set(samples[j], map);
-			}
-			{
-				Map<String, Float> map = node.getPar2MapList().get(samples[j]);
-				for (String k : map.keySet()) {
+					all.add(f.getName());
 					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-						changeCachae.add(k);
-						float next = nextRandom(map.get(k));
-						map.put(k, next);
-					} else {
-						map.put(k, map.get(k));
+						changeCachae.add(f.getName());
+						float next = nextRandom(f.getFloat(map));
+						f.setFloat(map, next);
 					}
 
-				}
+				},  RandomConfig.class);
+				result.setPara(map);
+			}
+			{
+				LycjssFlagData map = node.getParb();
 
-				result.getPar2MapList().set(samples[j], map);
+				Helper.eachField(map, LycjssFlagData.class, (f, n, v, flter) -> {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
+
+					all.add(f.getName());
+					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+						changeCachae.add(f.getName());
+						float next = nextRandom(f.getFloat(map));
+						f.setFloat(map, next);
+					}
+
+				},  RandomConfig.class);
+				result.setParb(map);
 			}
 
-			// {
-			// Map<String, Float> map =
-			// node.getParPowAMapList().get(samples[j]);
-			// for (String k : map.keySet()) {
+			{
+				LycjssFlagData map = node.getTodayP();
+
+				Helper.eachField(map, LycjssFlagData.class, (f, n, v, flter) -> {
+					if (flter != null && !((RandomConfig) flter).enable()) {
+						return;
+					}
+
+					all.add(f.getName());
+					if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+						changeCachae.add(f.getName());
+						float next = nextRandom(f.getFloat(map));
+						f.setFloat(map, next);
+					}
+
+				},  RandomConfig.class);
+				result.setTodayP(map);
+			}
+
+			if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
+				node.setPc(nextRandom(node.getPc()));
+			}
+			System.err.println("all:" + all.size() + " change:" + changeCachae.size());
+			// System.err.println("random:"+JSON.toJSONString(result));
+			// for (String k : node.getTodayP().keySet()) {
 			// if (random.nextFloat() <
-			// ImportConfig.getInstance().getPre_random()) {
-			// float next = nextRandom(map.get(k));
-			// map.put(k, next);
-			// } else {
-			// map.put(k, map.get(k));
-			// }
-			//
-			// }
-			//
-			// result.getParPowAMapList().set(samples[j], map);
-			// }
-			//
+			// ImportConfig.getInstance().getPre_random())
 			// {
-			// Map<String, Float> map = node.getParPwoMapList().get(samples[j]);
-			// for (String k : map.keySet()) {
-			// if (random.nextFloat() <
-			// ImportConfig.getInstance().getPre_random()) {
-			// float next =
-			// nextRandom(map.get(k),(float)ImportConfig.getInstance().getPerPowMax());
-			// map.put(k, next);
+			// float next = nextRandom();
+			// result.getTodayP().put(k, next);
+			// i++;
 			// } else {
-			// map.put(k, map.get(k));
+			// result.getTodayP().put(k, node.getTodayP().get(k));
+			// i++;
 			// }
 			//
 			// }
-			//
-			// result.getParPwoMapList().set(samples[j], map);
+			// for (String k : node.getYestodayP().keySet()) {
+			// if (random.nextFloat() <
+			// ImportConfig.getInstance().getPre_random())
+			// {
+			// i++;
+			// result.getYestodayP().put(k, nextRandom());
+			// } else {
+			// result.getYestodayP().put(k, node.getYestodayP().get(k));
+			// i++;
 			// }
+			// }
+			// System.err.println("i:" + i);
 
-			// System.err.println("I:"+ samples[j]);
-			// System.err.println("rr:"+JSON.toJSONString(result));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		{
-			Map<String, Float> map = node.getPara();
-			for (String k : map.keySet()) {
-				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-					changeCachae.add(k);
-					float next = nextRandom(map.get(k));
-					map.put(k, next);
-				} else {
-					map.put(k, map.get(k));
-				}
-
-			}
-			result.setPara(map);
-		}
-		{
-			Map<String, Float> map = node.getParb();
-			for (String k : map.keySet()) {
-				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-					changeCachae.add(k);
-					float next = nextRandom(map.get(k));
-					map.put(k, next);
-				} else {
-					map.put(k, map.get(k));
-				}
-
-			}
-			result.setParb(map);
-		}
-
-		{
-			Map<String, Float> map = node.getTodayP();
-			for (String k : map.keySet()) {
-				if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-					changeCachae.add(k);
-					float next = nextRandom(map.get(k));
-					map.put(k, next);
-				} else {
-					map.put(k, map.get(k));
-				}
-
-			}
-			result.setTodayP(map);
-		}
-
-		if (random.nextFloat() < ImportConfig.getInstance().getPre_random()) {
-			node.setPc(nextRandom(node.getPc()));
-		}
-		System.err.println("all:"+all.size()+" change:"+changeCachae.size());
-		// System.err.println("random:"+JSON.toJSONString(result));
-		// for (String k : node.getTodayP().keySet()) {
-		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
-		// {
-		// float next = nextRandom();
-		// result.getTodayP().put(k, next);
-		// i++;
-		// } else {
-		// result.getTodayP().put(k, node.getTodayP().get(k));
-		// i++;
-		// }
-		//
-		// }
-		// for (String k : node.getYestodayP().keySet()) {
-		// if (random.nextFloat() < ImportConfig.getInstance().getPre_random())
-		// {
-		// i++;
-		// result.getYestodayP().put(k, nextRandom());
-		// } else {
-		// result.getYestodayP().put(k, node.getYestodayP().get(k));
-		// i++;
-		// }
-		// }
-		// System.err.println("i:" + i);
 		return result;
 	}
 

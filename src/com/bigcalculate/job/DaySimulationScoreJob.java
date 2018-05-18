@@ -45,7 +45,7 @@ public class DaySimulationScoreJob extends DaySimulationJob {
 		// this.moneyALL = ((double) rSuccess) / rFail;
 		this.moneyALL = difScore;
 		YearResult yearResult = new YearResult();
-		double ra = success.doubleValue()/fail.doubleValue();
+		double ra = success.doubleValue() / fail.doubleValue();
 		yearResult.setStartMoney(ra);
 		andReesult.yearResults.add(yearResult);
 
@@ -53,8 +53,13 @@ public class DaySimulationScoreJob extends DaySimulationJob {
 				* (double) Long.min(successWinCount, successLossCount))
 				/ ((double) (failWinCount + failLossCount) * (double) Long.max(failWinCount, failLossCount));
 
-		succcessUp = Math.pow(succcessUp, ImportConfig.getInstance().getRaUp()/4);
+		succcessUp = Math.pow(succcessUp, ImportConfig.getInstance().getRaUp());
 
+		if (difScore > 0) {
+			difScore = Math.pow(difScore, 0.3);
+		} else {
+			difScore = -Math.pow(-difScore, 0.3);
+		}
 		this.dscore = difScore * Math.pow(ra, ImportConfig.getInstance().getRaUp()) * (succcessUp);
 		this.dscore /= count;
 		System.err.println("allWin:" + allWin + "   allLose:" + allLose + "  sum:" + (allWin + allLose));
@@ -74,21 +79,27 @@ public class DaySimulationScoreJob extends DaySimulationJob {
 
 	@Override
 	public synchronized void addHistory(History history) {
-		float pow = 0.8f;
+		if (!history.buySuccessFlag) {
+			return;
+		}
+		float pow = ImportConfig.getInstance().getScorePow();
 
-		 if (history.getScore() > 0) {
-		 history.setScore(Math.pow(history.getScore(), pow));
-		 } else {
-		
-		 history.setScore(-Math.pow(-history.getScore(), pow));
-		 }
+		if (history.getScore() > 0) {
+			history.setScore(Math.pow(history.getScore(), pow));
+		} else {
+
+			history.setScore(-Math.pow(-history.getScore(), pow));
+		}
 		// double temp = Math.pow(ImportConfig.getInstance().getScoreDown(),
 		// history.getAllSize() - history.getiSize())
 		// * history.dif * history.getScore();
-		double temp = cache[history.getAllSize() - history.getiSize()] * history.dif * history.getScore();
-//		System.err.println("date:" + dateHelper.dateFormat.format(history.getStart()) + " i:"
-//				+ (history.getAllSize() - history.getiSize())+"  "+cache[history.getAllSize() - history.getiSize()]);
-		difScore += temp;
+		double temp = (cache[history.getAllSize() - history.getiSize()] * history.dif * history.getScore())
+				/ (Math.pow(history.usersI, 0.3));
+		// System.err.println("ss:"+history.usersI);
+		// System.err.println("date:" +
+		// dateHelper.dateFormat.format(history.getStart()) + " i:"
+		// + (history.getAllSize() - history.getiSize())+"
+		// "+cache[history.getAllSize() - history.getiSize()]);
 		count++;
 
 		if (history.getScore() > 0) {
@@ -100,19 +111,21 @@ public class DaySimulationScoreJob extends DaySimulationJob {
 		}
 
 		if (temp > 0) {
-			success=	success.add(new BigDecimal( cache[history.getAllSize() - history.getiSize()]));
+			success = success.add(new BigDecimal(cache[history.getAllSize() - history.getiSize()]));
 			if (history.dif > 0) {
 				successWin += temp;
 				successWinCount++;
 				rSuccess++;
+				temp = temp * 2;
 			} else {
-
 				successLossCount++;
 				successLoss += temp;
 				rFail++;
+				temp = 0;
 			}
 		} else {
-			fail=fail.add(new BigDecimal( cache[history.getAllSize() - history.getiSize()]));
+			temp = temp * ImportConfig.getInstance().getFailRate();
+			fail = fail.add(new BigDecimal(cache[history.getAllSize() - history.getiSize()]));
 			if (history.dif > 0) {
 				failWinCount++;
 				failWin += temp;
@@ -121,6 +134,7 @@ public class DaySimulationScoreJob extends DaySimulationJob {
 				failLoss += temp;
 			}
 		}
+		difScore += temp;
 		// System.err.println(history.getAllSize()+" "+history.getiSize()+"
 		// "+history.id);
 		// System.err.println( history.getScore()+" "+history.dif+" "+

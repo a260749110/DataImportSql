@@ -3,6 +3,7 @@ package com.check.cells;
 import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.sql.domain.CDataBasePo;
 import com.util.RandomConfig;
 
@@ -39,7 +40,10 @@ public class LycjssFlagData extends DataBase {
 	private float ttttDifrc;
 	private float ttttSumtt;
 	private float ttttFcd;;
+	@JSONField(deserialize = false, serialize = false)
+	@RandomConfig(enable = false, calculateYestoday = false)
 	private History buyHistory;
+
 	public float getLydmiPdi() {
 		return lydmiPdi;
 	}
@@ -369,10 +373,12 @@ public class LycjssFlagData extends DataBase {
 		this.lycjdmiFlagsumsshow = lycjdmiFlagsumsshow;
 	}
 
+	@JSONField(deserialize = false, serialize = false)
 	public History getBuyHistory() {
 		return buyHistory;
 	}
 
+	@JSONField(deserialize = false, serialize = false)
 	public void setBuyHistory(History buyHistory) {
 		this.buyHistory = buyHistory;
 	}

@@ -8,17 +8,18 @@ import java.util.Map;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.bigcalculate.job.DaySimulationJob.YearResult;
+import com.check.cells.LycjssFlagData;
 
 public class CalculateNode {
-	private Map<String, Float> todayP = new HashMap<>();
-	private Map<String, Float> yestodayP = new HashMap<>();
-	private List<Map<String, Float>> parMapList = new ArrayList<>();
-	private List<Map<String, Float>> par2MapList = new ArrayList<>();
+	private LycjssFlagData todayP =new LycjssFlagData() ;
+	private LycjssFlagData yestodayP =new LycjssFlagData() ;
+	private List<LycjssFlagData> parMapList = new ArrayList<>();
+	private List<LycjssFlagData> par2MapList = new ArrayList<>();
 	// private List<Map<String, Float>> parPwoMapList = new ArrayList<>();
 	// private List<Map<String, Float>> parPowAMapList =new ArrayList<>();
 	private float pc = 0;
-	private Map<String, Float> para = new HashMap<>();
-	private Map<String, Float> parb = new HashMap<>();
+	private LycjssFlagData para =new LycjssFlagData() ;
+	private LycjssFlagData parb =new LycjssFlagData() ;
 	private Map<String, YearResult> yearInfo = new HashMap<>();
 	private double score;
 	private double sScore;
@@ -26,146 +27,161 @@ public class CalculateNode {
 	private int cacheId = 0;
 	@JSONField(deserialize = false, serialize = false)
 	private HashSet<String> changeSet;
-	public Map<String, Float> getTodayP() {
+	/**
+	 * @return the todayP
+	 */
+	public LycjssFlagData getTodayP() {
 		return todayP;
 	}
-
-	public void setTodayP(Map<String, Float> todayP) {
+	/**
+	 * @param todayP the todayP to set
+	 */
+	public void setTodayP(LycjssFlagData todayP) {
 		this.todayP = todayP;
 	}
-
-	public Map<String, Float> getYestodayP() {
+	/**
+	 * @return the yestodayP
+	 */
+	public LycjssFlagData getYestodayP() {
 		return yestodayP;
 	}
-
-	public void setYestodayP(Map<String, Float> yestodayP) {
+	/**
+	 * @param yestodayP the yestodayP to set
+	 */
+	public void setYestodayP(LycjssFlagData yestodayP) {
 		this.yestodayP = yestodayP;
 	}
-
-	public double getScore() {
-		return score;
-	}
-
-	public void setScore(double score) {
-		this.score = score;
-	}
-
-	public double getsScore() {
-		return sScore;
-	}
-
-	public void setsScore(double sScore) {
-		this.sScore = sScore;
-	}
-
-	public List<Map<String, Float>> getParMapList() {
+	/**
+	 * @return the parMapList
+	 */
+	public List<LycjssFlagData> getParMapList() {
 		return parMapList;
 	}
-
-	public void setParMapList(List<Map<String, Float>> parMapList) {
+	/**
+	 * @param parMapList the parMapList to set
+	 */
+	public void setParMapList(List<LycjssFlagData> parMapList) {
 		this.parMapList = parMapList;
 	}
-
-	public Map<String, YearResult> getYearInfo() {
-		return yearInfo;
-	}
-
-	public void setYearInfo(Map<String, YearResult> yearInfo) {
-		this.yearInfo = yearInfo;
-	}
-
-	public List<Map<String, Float>> getPar2MapList() {
+	/**
+	 * @return the par2MapList
+	 */
+	public List<LycjssFlagData> getPar2MapList() {
 		return par2MapList;
 	}
-
-	public void setPar2MapList(List<Map<String, Float>> par2MapList) {
+	/**
+	 * @param par2MapList the par2MapList to set
+	 */
+	public void setPar2MapList(List<LycjssFlagData> par2MapList) {
 		this.par2MapList = par2MapList;
 	}
-
 	/**
-	 * @return the para
+	 * @return the pc
 	 */
-	public Map<String, Float> getPara() {
-		return para;
-	}
-
-	/**
-	 * @param para
-	 *            the para to set
-	 */
-	public void setPara(Map<String, Float> para) {
-		this.para = para;
-	}
-
-	/**
-	 * @return the parb
-	 */
-	public Map<String, Float> getParb() {
-		return parb;
-	}
-
-	/**
-	 * @param parb
-	 *            the parb to set
-	 */
-	public void setParb(Map<String, Float> parb) {
-		this.parb = parb;
-	}
-
-	public double getDscore() {
-		return dscore;
-	}
-
-	public void setDscore(double dscore) {
-		this.dscore = dscore;
-	}
-
 	public float getPc() {
 		return pc;
 	}
-
+	/**
+	 * @param pc the pc to set
+	 */
 	public void setPc(float pc) {
 		this.pc = pc;
 	}
-
+	/**
+	 * @return the para
+	 */
+	public LycjssFlagData getPara() {
+		return para;
+	}
+	/**
+	 * @param para the para to set
+	 */
+	public void setPara(LycjssFlagData para) {
+		this.para = para;
+	}
+	/**
+	 * @return the parb
+	 */
+	public LycjssFlagData getParb() {
+		return parb;
+	}
+	/**
+	 * @param parb the parb to set
+	 */
+	public void setParb(LycjssFlagData parb) {
+		this.parb = parb;
+	}
+	/**
+	 * @return the yearInfo
+	 */
+	public Map<String, YearResult> getYearInfo() {
+		return yearInfo;
+	}
+	/**
+	 * @param yearInfo the yearInfo to set
+	 */
+	public void setYearInfo(Map<String, YearResult> yearInfo) {
+		this.yearInfo = yearInfo;
+	}
+	/**
+	 * @return the score
+	 */
+	public double getScore() {
+		return score;
+	}
+	/**
+	 * @param score the score to set
+	 */
+	public void setScore(double score) {
+		this.score = score;
+	}
+	/**
+	 * @return the sScore
+	 */
+	public double getsScore() {
+		return sScore;
+	}
+	/**
+	 * @param sScore the sScore to set
+	 */
+	public void setsScore(double sScore) {
+		this.sScore = sScore;
+	}
+	/**
+	 * @return the dscore
+	 */
+	public double getDscore() {
+		return dscore;
+	}
+	/**
+	 * @param dscore the dscore to set
+	 */
+	public void setDscore(double dscore) {
+		this.dscore = dscore;
+	}
 	/**
 	 * @return the cacheId
 	 */
 	public int getCacheId() {
 		return cacheId;
 	}
-
 	/**
-	 * @param cacheId
-	 *            the cacheId to set
+	 * @param cacheId the cacheId to set
 	 */
 	public void setCacheId(int cacheId) {
 		this.cacheId = cacheId;
 	}
-
-
+	/**
+	 * @return the changeSet
+	 */
 	public HashSet<String> getChangeSet() {
 		return changeSet;
 	}
-
+	/**
+	 * @param changeSet the changeSet to set
+	 */
 	public void setChangeSet(HashSet<String> changeSet) {
 		this.changeSet = changeSet;
 	}
 
-	// public List<Map<String, Float>> getParPwoMapList() {
-	// return parPwoMapList;
-	// }
-	//
-	// public void setParPwoMapList(List<Map<String, Float>> parPwoMapList) {
-	// this.parPwoMapList = parPwoMapList;
-	// }
-	//
-	//
-	// public List<Map<String, Float>> getParPowAMapList() {
-	// return parPowAMapList;
-	// }
-	//
-	// public void setParPowAMapList(List<Map<String, Float>> parPowAMapList) {
-	// this.parPowAMapList = parPowAMapList;
-	// }
 }
